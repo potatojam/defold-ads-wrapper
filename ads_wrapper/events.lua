@@ -1,0 +1,17 @@
+local M = {}
+
+M.ABORT = hash("ABORT")
+M.SUCCESS = hash("SUCCESS")
+M.ERROR = hash("ERROR")
+
+M.C_SKIPPED = hash("R_SKIPPED")
+M.C_ERROR_UNKNOWN = hash("C_ERROR_UNKNOWN")
+M.C_ERROR_AD_BLOCK = hash("C_ERROR_AD_BLOCK")
+M.C_ERROR_NO_CONNECTION = hash("C_ERROR_NO_CONNECTION")
+
+M.V_NONE = hash("V_NONE")
+M.V_ERROR = hash("V_ERRORS")
+M.V_SUCCESS = hash("V_SUCCESS")
+M.V_ALL = hash("V_ALL")
+
+return M
