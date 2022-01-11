@@ -15,5 +15,5 @@ input_method = HiddenInputField
 title = defold-ads-wrapper
 
 [library]
-include_dirs = ads_networks
+include_dirs = ads_wrapper
 
