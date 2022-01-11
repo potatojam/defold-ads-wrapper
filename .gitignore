@@ -8,3 +8,6 @@ Thumbs.db
 .project
 .cproject
 builtins
+/.defold-api
+/.vscode
+/_build

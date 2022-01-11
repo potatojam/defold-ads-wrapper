@@ -146,17 +146,22 @@ function M.call_all(mediator, q, callback)
     local count = #mediator.networks
     local response = helper.success()
     response.responses = {}
-    for i, network in pairs(mediator.networks) do
-        queue.run(q, network, function(fn_response)
-            count = count - 1
-            if fn_response.result == events.ERROR then
-                response.result = events.ERROR
-            end
-            table.insert(response.responses, fn_response)
-            if count == 0 then
-                callback(response)
-            end
-        end)
+    if not mediator.networks or #mediator.networks == 0 then
+        response.message = "Networks are missing."
+        callback(response)
+    else
+        for i, network in pairs(mediator.networks) do
+            queue.run(q, network, function(fn_response)
+                count = count - 1
+                if fn_response.result == events.ERROR then
+                    response.result = events.ERROR
+                end
+                table.insert(response.responses, fn_response)
+                if count == 0 then
+                    callback(response)
+                end
+            end)
+        end
     end
 end
 

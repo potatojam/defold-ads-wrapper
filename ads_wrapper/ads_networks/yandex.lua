@@ -1,5 +1,5 @@
 local M = {NAME = "yandex"}
---- TODO: check working
+
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
 local events = require("ads_wrapper.events")
@@ -19,6 +19,7 @@ local banner_initialized = false
 local banner_id = nil
 local banner_showed = false
 local banner_settings = nil
+local is_opened = false
 local banner_configs = {size = {width = "100vw", height = "56vh"}, position = {x = "0px", y = "0px"}}
 
 -- Call saved `module_callback` only once. Send result.
@@ -116,14 +117,18 @@ end
 -- Called when a interstitial is opened.
 ---@param self userdata script data
 local function adv_open(self)
-    print("YANDEX: Interstitial AD is opening")
+    is_opened = true
 end
 
 -- Called when a interstitial is closed.
 ---@param self userdata script data
 ---@param was_shown boolean Has an ad been shown?
 local function adv_close(self, was_shown)
-    callback_once(helper.success())
+    local response = helper.success()
+    response.was_open = is_opened
+    response.was_shown = was_shown
+    is_opened = false
+    callback_once(response)
 end
 
 -- Called when internet is offline.
@@ -142,7 +147,7 @@ end
 -- Called when a rewarded video is opened.
 ---@param self userdata script data
 local function rewarded_open(self)
-    print("YANDEX: Interstitial AD is opening")
+    is_opened = true
 end
 
 -- Called when a user receives a reward.
@@ -154,12 +159,11 @@ end
 -- Called when a rewarded video is closed.
 ---@param self userdata script data
 local function rewarded_close(self)
-    if is_reward_get then
-        is_reward_get = false
-        callback_once(helper.success())
-    else
-        callback_once(helper.skipped())
-    end
+    local response = is_reward_get and helper.success() or helper.skipped()
+    response.was_open = is_opened
+    is_reward_get = false
+    is_opened = false
+    callback_once(response)
 end
 
 ---Called when banner is created.
@@ -256,7 +260,7 @@ end
 ---Check if the environment supports yandex api
 ---@return bool
 function M.is_supported()
-    return html5 and yagames and sitelock.verify_domain()
+    return yagames and sitelock.verify_domain()
 end
 
 ---Returns Yandex.Games interface language in ISO 639-1 format.
@@ -378,6 +382,8 @@ function M.show_banner()
     if M.is_banner_loaded() then
         banner_showed = true
         yagames.banner_set(banner_id, "display", "flex")
+        yagames.banner_refresh(banner_id, function(self, err, data)
+        end)
         return helper.success()
     end
     return helper.error("YANDEX: Banner not loaded")
