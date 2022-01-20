@@ -175,6 +175,7 @@ local function banner_create_handler(self, err, data)
     if not err then
         banner_loaded = true
         yagames.is_banners_on = true
+        M.hide_banner()
         callback_once_delay(helper.success())
     else
         callback_once_delay(helper.error("YANDEX: banner create error: " .. err))
@@ -186,7 +187,7 @@ end
 local function create_css_style()
     return
         "width: " .. banner_configs.size.width .. ";height: " .. banner_configs.size.height .. ";top: " .. banner_configs.position.y .. ";left: " ..
-            banner_configs.position.x .. ";" .. (banner_settings.css_styles or "align-items: center;justify-content: center;overflow: hidden;")
+            banner_configs.position.x .. ";" .. (banner_settings.css_styles or "align-items: center;justify-content: center;overflow: hidden;display: flex;")
 end
 
 ---Creates a banner according to the specified parameters
@@ -194,8 +195,7 @@ local function create_banner()
     yagames.banner_create(banner_id, {
         stat_id = banner_settings.stat_id,
         css_styles = create_css_style(),
-        css_class = banner_settings.css_class,
-        display = "none"
+        css_class = banner_settings.css_class
     }, banner_create_handler)
 end
 
