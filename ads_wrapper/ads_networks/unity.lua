@@ -10,7 +10,10 @@ local module_callback
 local is_ready = {}
 local banner_loaded = false
 local banner_showed = false
-local banner_configs = {size = {width = 320, height = 50}, position = unityads.BANNER_POSITION_TOP_CENTER}
+local banner_configs 
+if unityads then
+    banner_configs = {size = {width = 320, height = 50}, position = unityads.BANNER_POSITION_TOP_CENTER}
+end
 
 -- Call saved `module_callback` only once. Send result.
 ---@param result hash

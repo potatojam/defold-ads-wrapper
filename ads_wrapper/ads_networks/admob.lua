@@ -9,7 +9,10 @@ local module_callback
 local banner_showed = false
 local is_admob_initialized = false
 local is_reward_get = false
-local banner_configs = {size = admob.SIZE_ADAPTIVE_BANNER, position = admob.POS_TOP_CENTER}
+local banner_configs 
+if admob then
+    banner_configs = {size = admob.SIZE_ADAPTIVE_BANNER, position = admob.POS_TOP_CENTER}
+end
 
 ---Call saved `module_callback` only once.
 ---@param response any
