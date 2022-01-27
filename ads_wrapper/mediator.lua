@@ -148,7 +148,7 @@ function M.call_all(mediator, q, callback)
     response.responses = {}
     if not mediator.networks or #mediator.networks == 0 then
         response.message = "Networks are missing."
-        callback(response)
+        handle(callback, response)
     else
         for i, network in pairs(mediator.networks) do
             queue.run(q, network, function(fn_response)
@@ -158,7 +158,7 @@ function M.call_all(mediator, q, callback)
                 end
                 table.insert(response.responses, fn_response)
                 if count == 0 then
-                    callback(response)
+                    handle(callback, response)
                 end
             end)
         end
