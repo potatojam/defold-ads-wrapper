@@ -9,7 +9,7 @@ local module_callback
 local banner_showed = false
 local is_admob_initialized = false
 local is_reward_get = false
-local banner_configs 
+local banner_configs
 if admob then
     banner_configs = {size = admob.SIZE_ADAPTIVE_BANNER, position = admob.POS_TOP_CENTER}
 end
@@ -41,11 +41,11 @@ local function admob_callback(self, message_id, message)
         if message.event == admob.EVENT_COMPLETE then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_JSON_ERROR then
-            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. tostring(message.error)))
         end
     elseif message_id == admob.MSG_IDFA then
         if message.event == admob.EVENT_JSON_ERROR then
-            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. tostring(message.error)))
         else
             local message_text = "IDFA event"
             if message.event == admob.EVENT_STATUS_AUTORIZED then
@@ -65,23 +65,26 @@ local function admob_callback(self, message_id, message)
         if message.event == admob.EVENT_CLOSED then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_FAILED_TO_SHOW then
-            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. message.code .. "\nError: " ..
-                                           message.error))
+            callback_once(helper.error(
+                              "ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                  tostring(message.error)))
         elseif message.event == admob.EVENT_OPENING then
             -- on android this event fire only when ADS activity closed =(
             -- print("EVENT_OPENING: Interstitial AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
-            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Interstitial AD failed to load\nCode: " .. message.code .. "\nError: " ..
-                                           message.error))
+            callback_once(helper.error(
+                              "ADMOB: EVENT_FAILED_TO_LOAD: Interstitial AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                  tostring(message.error)))
         elseif message.event == admob.EVENT_LOADED then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_NOT_LOADED then
-            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. message.code .. "\nError: " ..
-                                           message.error))
+            callback_once(helper.error(
+                              "ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                  tostring(message.error)))
         elseif message.event == admob.EVENT_IMPRESSION_RECORDED then
             -- print("EVENT_IMPRESSION_RECORDED: Interstitial did record impression")
         elseif message.event == admob.EVENT_JSON_ERROR then
-            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. tostring(message.error)))
         end
     elseif message_id == admob.MSG_REWARDED then
         if message.event == admob.EVENT_CLOSED then
@@ -92,33 +95,34 @@ local function admob_callback(self, message_id, message)
             end
             is_reward_get = false
         elseif message.event == admob.EVENT_FAILED_TO_SHOW then
-            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_SHOW: Rewarded AD failed to show\nCode: " .. message.code .. "\nError: " ..
-                                           message.error))
+            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_SHOW: Rewarded AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                           tostring(message.error)))
         elseif message.event == admob.EVENT_OPENING then
             -- on android this event fire only when ADS activity closed =(
             -- print("EVENT_OPENING: Rewarded AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
-            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Rewarded AD failed to load\nCode: " .. message.code .. "\nError: " ..
-                                           message.error))
+            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Rewarded AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                           tostring(message.error)))
         elseif message.event == admob.EVENT_LOADED then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_NOT_LOADED then
-            callback_once(helper.error("ADMOB: EVENT_NOT_LOADED: can't call show_rewarded() before EVENT_LOADED\nError: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_NOT_LOADED: can't call show_rewarded() before EVENT_LOADED\nError: " .. tostring(message.error)))
         elseif message.event == admob.EVENT_EARNED_REWARD then
             is_reward_get = true
         elseif message.event == admob.EVENT_IMPRESSION_RECORDED then
             -- print("EVENT_IMPRESSION_RECORDED: Rewarded did record impression")
         elseif message.event == admob.EVENT_JSON_ERROR then
-            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. tostring(message.error)))
         end
     elseif message_id == admob.MSG_BANNER then
         if message.event == admob.EVENT_LOADED then
-            callback_once(helper.success("ADMOB: EVENT_LOADED: Banner AD loaded. Height: " .. message.height .. "px Width: " .. message.width .. "px"))
+            callback_once(helper.success("ADMOB: EVENT_LOADED: Banner AD loaded. Height: " .. tostring(message.height) .. "px Width: " ..
+                                             tostring(message.width) .. "px"))
         elseif message.event == admob.EVENT_OPENING then
             -- print("ADMOB: EVENT_OPENING: Banner AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
-            callback_once(
-                helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Banner AD failed to load\nCode: " .. message.code .. "\nError: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Banner AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                           tostring(message.error)))
         elseif message.event == admob.EVENT_CLICKED then
             -- print("ADMOB: EVENT_CLICKED: Banner AD loaded")
         elseif message.event == admob.EVENT_CLOSED then
@@ -128,7 +132,7 @@ local function admob_callback(self, message_id, message)
         elseif message.event == admob.EVENT_IMPRESSION_RECORDED then
             -- print("ADMOB: EVENT_IMPRESSION_RECORDED: Banner did record impression")
         elseif message.event == admob.EVENT_JSON_ERROR then
-            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. message.error))
+            callback_once(helper.error("ADMOB: EVENT_JSON_ERROR: Internal NE json error: " .. tostring(message.error)))
         end
     end
 end
