@@ -10,12 +10,17 @@ height = 960
 
 [android]
 input_method = HiddenInputField
+debuggable = 1
+minimum_sdk_version = 19
 
 [project]
-title = defold-ads-wrapper
-version = 0.5.6
+title = Ads Wrapper
+version = 0.6.0
 dependencies#0 = https://github.com/andsve/dirtylarry/archive/master.zip
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.7.0.zip
+dependencies#2 = https://github.com/AGulev/DefVideoAds/archive/master.zip
+dependencies#3 = https://github.com/defold/extension-admob/archive/master.zip
+dependencies#4 = https://github.com/AGulev/defold-poki-sdk/archive/main.zip
 
 [library]
 include_dirs = ads_wrapper
@@ -25,4 +30,9 @@ show_made_with_defold = 0
 show_fullscreen_button = 0
 scale_mode = fit
 engine_arguments = --verify-graphics-calls=false
+
+[admob]
+app_id_ios = ca-app-pub-3940256099942544~1458002511
+app_id_android = ca-app-pub-3940256099942544~3347511713
+ios_tracking_usage_description = Your data will be used to provide you a better and personalized ad experience.
 

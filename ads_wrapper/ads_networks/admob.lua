@@ -1,4 +1,5 @@
 local M = {NAME = "admob"}
+-- Extention: https://github.com/defold/extension-admob
 
 local ads = require("ads_wrapper.ads_wrapper")
 local platform = require("ads_wrapper.platform")

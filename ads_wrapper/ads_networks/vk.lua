@@ -1,4 +1,6 @@
 local M = {NAME = "vk"}
+-- Extention: https://github.com/potatojam/defold-vkbridge
+-- TODO: add delay for one user for a day
 
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")

@@ -1,11 +1,15 @@
 ---@class ads_wrapper
 local ads_wrapper = {}
 
+ads_wrapper.T_REWARDED = hash("T_REWARDED")
+ads_wrapper.T_INTERSTITIAL = hash("T_INTERSTITIAL")
+ads_wrapper.T_BANNER = hash("T_BANNER")
+
 ---Registers network. Returns id
 ---@param network network
 ---@param params any parameters to be passed to the network.setup function
 ---@return number|nil
-function ads_wrapper.reg_network(network, params)
+function ads_wrapper.register_network(network, params)
 end
 
 ---Setups interstitial and reward mediator
@@ -26,9 +30,20 @@ function ads_wrapper.is_internet_connected()
 end
 
 ---Initializes all networks.
----@param delay number
+---@param initilize_video boolean
+---@param initilize_banner boolean
 ---@param callback function the function is called after execution.
-function ads_wrapper.init(delay, callback)
+function ads_wrapper.init(initilize_video, initilize_banner, callback)
+end
+
+---Initialize video networks
+---@param callback function the function is called after execution.
+function ads_wrapper.init_video_networks(callback)
+end
+
+---Initialize banner networks
+---@param callback function the function is called after execution.
+function ads_wrapper.init_banner_networks(callback)
 end
 
 ---Loads rewarded ads for next network
@@ -79,6 +94,11 @@ end
 ---Check if the interstitial and rewarded video mediator is set up
 ---@return boolean
 function ads_wrapper.is_video_setup()
+end
+
+---Check if ads wrapper is initiailzed
+---@return boolean
+function ads_wrapper.is_initialized()
 end
 
 return ads_wrapper

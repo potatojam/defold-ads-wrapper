@@ -4,7 +4,6 @@ local mediator = require("ads_wrapper.mediator")
 local queue = require("ads_wrapper.queue")
 local wrapper = require("ads_wrapper.wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
-local events = require("ads_wrapper.events")
 
 -- constants
 M.T_REWARDED = hash("T_REWARDED")
@@ -139,7 +138,7 @@ end
 ---@param network network
 ---@param params any parameters to be passed to the network.setup function
 ---@return number|nil
-function M.reg_network(network, params)
+function M.register_network(network, params)
     if network.is_supported() then
         local id = #networks + 1
         networks[id] = network
@@ -203,6 +202,8 @@ function M.init(initilize_video, initilize_banner, callback)
     end
 end
 
+---Initialize video networks
+---@param callback function the function is called after execution.
 function M.init_video_networks(callback)
     if video_mediator then
         mediator.call_all(video_mediator, queues.init, callback)
@@ -211,6 +212,8 @@ function M.init_video_networks(callback)
     end
 end
 
+---Initialize banner networks
+---@param callback function the function is called after execution.
 function M.init_banner_networks(callback)
     if banner_mediator then
         mediator.call_all(banner_mediator, queues.init, callback)

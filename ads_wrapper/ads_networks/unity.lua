@@ -1,4 +1,5 @@
 local M = {NAME = "unity"}
+-- Extention: https://github.com/AGulev/DefVideoAds
 
 local ads = require("ads_wrapper.ads_wrapper")
 local platform = require("ads_wrapper.platform")
@@ -171,7 +172,7 @@ function M.setup(params)
     end
     if ads.is_debug then
         if platform.is_same(platform.PL_IOS) or platform.is_same(platform.PL_ANDROID) then
-            parameters.ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1401815"}
+            parameters.ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"}
             parameters[ads.T_BANNER] = {id = "banner"} -- test unit for banners
             parameters[ads.T_INTERSTITIAL] = "video" -- test unit for interstitial
             parameters[ads.T_REWARDED] = "rewardedVideo" -- test unit for rewarded

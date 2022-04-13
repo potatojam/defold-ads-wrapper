@@ -1,4 +1,5 @@
 local M = {NAME = "yandex"}
+-- Extention: https://github.com/indiesoftby/defold-yagames
 
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")

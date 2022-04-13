@@ -48,4 +48,10 @@ end
 function mediator.call_all(mediator, q, callback)
 end
 
+---Add networks from another mediator 
+---@param to mediator
+---@param from mediator
+function mediator.add_networks(to, from)
+end
+
 return mediator

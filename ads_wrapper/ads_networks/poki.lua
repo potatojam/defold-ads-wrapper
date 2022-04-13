@@ -1,4 +1,5 @@
 local M = {NAME = "poki"}
+-- Extention: https://github.com/AGulev/defold-poki-sdk
 
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
