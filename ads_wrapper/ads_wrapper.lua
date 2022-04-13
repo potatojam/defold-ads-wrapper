@@ -4,6 +4,7 @@ local mediator = require("ads_wrapper.mediator")
 local queue = require("ads_wrapper.queue")
 local wrapper = require("ads_wrapper.wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
+local events = require("ads_wrapper.events")
 
 -- constants
 M.T_REWARDED = hash("T_REWARDED")
@@ -20,6 +21,7 @@ local video_mediator
 local banner_mediator
 local networks = {}
 local queues = {}
+local initialized = false
 
 ---Handler for error when mediator isn't setup
 ---@param name string mediator name
@@ -32,35 +34,15 @@ local function mediator_error(name, callback)
     end
 end
 
----Registers network. Returns id
----@param network network
----@param params any parameters to be passed to the network.setup function
----@return number|nil
-function M.reg_network(network, params)
-    if network.is_supported() then
-        local id = #networks + 1
-        networks[id] = network
-        network.setup(params)
-        return id
-    else
-        return nil
+---Call callback in the second frame. Send result.
+---It is necessary to use timer for the coroutine to continue.
+---@param result hash
+local function handle(callback, result)
+    if callback then
+        timer.delay(0, false, function()
+            callback(result)
+        end)
     end
-end
-
----Setups interstitial and reward mediator
----@param order table
----@param repeat_count number
-function M.setup_video(order, repeat_count)
-    video_mediator = mediator.create_mediator()
-    mediator.setup(video_mediator, networks, order, repeat_count)
-end
-
----Setups banner mediator
----@param order table
----@param repeat_count number
-function M.setup_banner(order, repeat_count)
-    banner_mediator = mediator.create_mediator()
-    mediator.setup(banner_mediator, networks, order, repeat_count)
 end
 
 ---Checks for internet connection
@@ -148,10 +130,53 @@ local function create_hide_banner()
     return q
 end
 
+---Remove all registered networks
+function M.clear_networks()
+    networks = {}
+end
+
+---Registers network. Returns id
+---@param network network
+---@param params any parameters to be passed to the network.setup function
+---@return number|nil
+function M.reg_network(network, params)
+    if network.is_supported() then
+        local id = #networks + 1
+        networks[id] = network
+        network.setup(params)
+        return id
+    else
+        pprint(network.NAME .. " Network is not supported for this platform. Network not registered")
+        return nil
+    end
+end
+
+---Setups interstitial and reward mediator
+---@param order table
+---@param repeat_count number
+function M.setup_video(order, repeat_count)
+    video_mediator = mediator.create_mediator()
+    mediator.setup(video_mediator, networks, order, repeat_count)
+end
+
+---Setups banner mediator
+---@param order table
+---@param repeat_count number
+function M.setup_banner(order, repeat_count)
+    banner_mediator = mediator.create_mediator()
+    mediator.setup(banner_mediator, networks, order, repeat_count)
+end
+
 ---Initializes all networks.
----@param delay number
+---@param initilize_video boolean
+---@param initilize_banner boolean
 ---@param callback function the function is called after execution.
-function M.init(delay, callback)
+function M.init(initilize_video, initilize_banner, callback)
+    if M.is_initialized() then
+        handle(callback, helper.success("Ads Wrapper already initialized"))
+        return
+    end
+    initialized = true
     queues.init = create_init()
     queues.show_interstitial = create_show_interstitial()
     queues.load_interstitial = create_load_interstitial()
@@ -162,19 +187,35 @@ function M.init(delay, callback)
     queues.hide_banner = create_hide_banner()
     queues.show_banner = create_show_banner()
 
-    local av_mediator = M.is_video_setup() and video_mediator or banner_mediator
-
-    if not av_mediator then
-        mediator_error("", callback)
-        return
-    end
-
-    if delay ~= nil then
-        timer.delay(delay, false, function()
-            mediator.call_all(av_mediator, queues.init, callback)
+    if initilize_video or initilize_banner then
+        local init_mediator = mediator.create_mediator()
+        if initilize_video then
+            mediator.add_networks(init_mediator, video_mediator)
+        end
+        if initilize_banner then
+            mediator.add_networks(init_mediator, banner_mediator)
+        end
+        mediator.call_all(init_mediator, queues.init, function(resonse)
+            handle(callback, helper.success("Tryed to initialize networks", resonse))
         end)
     else
-        mediator.call_all(av_mediator, queues.init, callback)
+        handle(callback, helper.success("Ads Wrapper initialized without networks"))
+    end
+end
+
+function M.init_video_networks(callback)
+    if video_mediator then
+        mediator.call_all(video_mediator, queues.init, callback)
+    else
+        mediator_error(VIDEO, callback)
+    end
+end
+
+function M.init_banner_networks(callback)
+    if banner_mediator then
+        mediator.call_all(banner_mediator, queues.init, callback)
+    else
+        mediator_error(BANNER, callback)
     end
 end
 
@@ -268,6 +309,12 @@ end
 ---@return boolean
 function M.is_video_setup()
     return video_mediator ~= nil
+end
+
+---Check if wrapper is initiailzed
+---@return boolean
+function M.is_initialized()
+    return initialized
 end
 
 return M

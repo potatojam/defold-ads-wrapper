@@ -34,6 +34,7 @@ end
 function M.create_mediator()
     local mediator = {}
     mediator.order = {}
+    mediator.networks = {}
     mediator.current_network_num = 0
     mediator.repeater = 0
     mediator.repeat_num = false
@@ -46,13 +47,13 @@ end
 ---@param order table order of show ad. Array with objects like `{id = net_id, count = 2}`
 ---@param repeat_count number count for repeat
 function M.setup(mediator, networks, order, repeat_count)
-    mediator.repeater = repeat_count
-    mediator.networks = networks
-    for _, network in ipairs(order) do
-        local id = network.id
+    mediator.repeater = repeat_count or 0
+    for _, network_data in ipairs(order) do
+        local id = network_data.id
         if id then
-            local count = network.count
+            local count = network_data.count or 1
             for i = 1, count do
+                mediator.networks[id] = networks[id]
                 mediator.order[#mediator.order + 1] = networks[id]
             end
         end
@@ -97,7 +98,7 @@ function M.call(mediator, q, callback)
     local co
     co = coroutine.create(function()
         local checked = {}
-        local response
+        local response = helper.error("Something bad happened")
         for i = 1, mediator.repeat_num do
             local network = M.get_next_network(mediator)
             if not checked[network.NAME] then
@@ -105,6 +106,7 @@ function M.call(mediator, q, callback)
                     if fn_response.result ~= events.SUCCESS then
                         checked[network.NAME] = true
                     end
+                    fn_response.name = network.NAME
                     response = fn_response
                     resume(co)
                 end)
@@ -126,9 +128,10 @@ end
 function M.call_current(mediator, q, callback)
     local co
     co = coroutine.create(function()
-        local response
+        local response = helper.error("Something bad happened")
         local network = M.get_current_network(mediator)
         queue.run(q, network, function(fn_response)
+            fn_response.name = network.NAME
             response = fn_response
             resume(co)
         end)
@@ -143,16 +146,18 @@ end
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
 function M.call_all(mediator, q, callback)
-    local count = #mediator.networks
+    local count = 0
     local response = helper.success()
     response.responses = {}
     if not mediator.networks or #mediator.networks == 0 then
         response.message = "Networks are missing."
         handle(callback, response)
     else
-        for i, network in pairs(mediator.networks) do
+        for id, network in pairs(mediator.networks) do
+            count = count + 1
             queue.run(q, network, function(fn_response)
                 count = count - 1
+                fn_response.network_name = network.NAME
                 if fn_response.result == events.ERROR then
                     response.result = events.ERROR
                 end
@@ -162,6 +167,17 @@ function M.call_all(mediator, q, callback)
                 end
             end)
         end
+    end
+end
+
+---Add networks from another mediator 
+---@param to mediator
+---@param from mediator
+function M.add_networks(to, from)
+    if from and from.networks then
+        for id, network in pairs(from.networks) do
+            to.networks[id] = network
+        end 
     end
 end
 

@@ -1,0 +1,190 @@
+local druid = require("druid.druid")
+local ads_wrapper = require("ads_wrapper.ads_wrapper")
+
+local C_RED = vmath.vector4(1, 0, 0, 1)
+local C_GREEN = vmath.vector4(0, 1, 0, 1)
+
+---https://stackoverflow.com/questions/6075262/lua-table-tostringtablename-and-table-fromstringstringtable-functions
+local function serializeTable(val, name, skipnewlines, depth)
+    skipnewlines = skipnewlines or false
+    depth = depth or 0
+    local tmp = string.rep("  ", depth)
+    if name then
+        tmp = tmp .. name .. " = "
+    end
+    if type(val) == "table" then
+        tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
+        for k, v in pairs(val) do
+            tmp = tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
+        end
+        tmp = tmp .. string.rep("  ", depth) .. "}"
+    elseif type(val) == "number" then
+        tmp = tmp .. tostring(val)
+    elseif type(val) == "string" then
+        tmp = tmp .. string.format("%q", val)
+    elseif type(val) == "boolean" then
+        tmp = tmp .. (val and "true" or "false")
+    else
+        -- tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
+        tmp = tmp .. tostring(val)
+    end
+    return tmp
+end
+
+local function update_log(self)
+    local metrix = gui.get_text_metrics_from_node(self.log_text)
+    self.log_size.y = metrix.height * 0.5 + 10
+    if self.log_size.y < 350 then
+        self.log_size.y = 350
+    end
+    self.log_scroll:set_size(self.log_size)
+    -- local pos = gui.get_position(self.log_scroll_content)
+    -- pos.y = 100 + self.log_size.y - 200
+    -- gui.set_position(self.log_scroll_content, pos)
+    self.log_scroll:scroll_to_percent(self.percent_y_100)
+end
+
+local function print_log(self, method, data)
+    pprint(method, data)
+    local text = "[" .. os.date("%H:%M:%S") .. "] " .. method .. ": "
+    if data or data == false then
+        if type(data) == "table" then
+            text = text .. serializeTable(data)
+        else
+            text = text .. tostring(data)
+            pprint(text .. tostring(data))
+        end
+    end
+    self.logs = self.logs .. text .. "\n"
+    local max = 2000
+    local length = #self.logs
+    if length > max then
+        self.logs = self.logs:sub(length - max, -1)
+    end
+    gui.set_text(self.log_text, self.logs)
+    update_log(self)
+end
+
+local function show_boolean(node_name, value)
+    local txt = gui.get_node(node_name)
+    gui.set_text(txt, tostring(value))
+    if value then
+        gui.set_color(txt, C_GREEN)
+    else
+        gui.set_color(txt, C_RED)
+    end
+end
+
+local function on_load_interstitial(self)
+    ads_wrapper.load_interstitial(function(response)
+        print_log(self, "load_interstitial", response)
+    end)
+end
+
+local function on_show_interstitial(self)
+    ads_wrapper.show_interstitial(function(response)
+        print_log(self, "show_interstitial", response)
+    end)
+end
+
+local function on_load_rewarded(self)
+    ads_wrapper.load_rewarded(function(response)
+        print_log(self, "load_rewarded", response)
+    end)
+end
+
+local function on_show_rewarded(self)
+    ads_wrapper.show_rewarded(function(response)
+        print_log(self, "show_rewarded", response)
+    end)
+end
+
+local function on_load_banner(self)
+    ads_wrapper.load_banner(function(response)
+        print_log(self, "load_banner", response)
+    end)
+end
+
+local function on_unload_banner(self)
+    ads_wrapper.unload_banner(function (response)
+        print_log(self, "unload_banner", response)
+    end)
+end
+
+local function on_show_banner(self)
+    ads_wrapper.show_banner(function (response)
+        print_log(self, "show_banner", response)
+    end)
+end
+
+local function on_hide_banner(self)
+    ads_wrapper.hide_banner(function (response)
+        print_log(self, "hide_banner", response)
+    end)
+end
+
+local function on_init_video(self)
+    ads_wrapper.init_video_networks(function (response)
+        print_log(self, "init_video_networks", response)
+    end)
+end
+
+local function on_init_banner(self)
+    ads_wrapper.init_banner_networks(function (response)
+        print_log(self, "init_banner_networks", response)
+    end)
+end
+
+local function init_test(self)
+    ads_wrapper.clear_networks()
+    local test = require("ads_wrapper.ads_networks.test")
+    local test_1_id = ads_wrapper.reg_network(test.network1, { param = "test_param 1"})
+    local test_2_id = ads_wrapper.reg_network(test.network2, { param = "test_param 2"})
+    ads_wrapper.setup_video({{id = test_2_id, count = 1}, {id = test_1_id}}, 2)
+    ads_wrapper.setup_banner({{id = test_1_id, count = 1}}, 1)
+    ads_wrapper.init(true, true, function (response)
+        print_log(self, "init wrapper", response)
+    end)
+end
+
+function init(self)
+    self.logs = ""
+    self.percent_y_100 = vmath.vector3(0, 1, 0)
+    self.druid = druid.new(self)
+    self.log_scroll_content = gui.get_node("bkg_scroll_content")
+    self.log_scroll = self.druid:new_scroll("mask", self.log_scroll_content)
+    self.log_text = gui.get_node("txt_log")
+    self.log_size = vmath.vector3(550, 350, 0)
+    update_log(self)
+    self.log_scroll:set_extra_stretch_size(0)
+
+    self.druid:new_button("btn_load_interstitial", on_load_interstitial)
+    self.druid:new_button("btn_show_interstitial", on_show_interstitial)
+    self.druid:new_button("btn_load_rewarded", on_load_rewarded)
+    self.druid:new_button("btn_show_rewarded", on_show_rewarded)
+    self.druid:new_button("btn_show_banner", on_show_banner)
+    self.druid:new_button("btn_hide_banner", on_hide_banner)
+    self.druid:new_button("btn_load_banner", on_load_banner)
+    self.druid:new_button("btn_unload_banner", on_unload_banner)
+    self.druid:new_button("btn_init_video", on_init_video)
+    self.druid:new_button("btn_init_banner", on_init_banner)
+
+    print_log(self, "init", "version: " .. sys.get_config("project.version"))
+    init_test(self)
+end
+
+function update(self, dt)
+    self.druid:update(dt)
+end
+
+function on_message(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+end
+
+function on_input(self, action_id, action)
+    return self.druid:on_input(action_id, action)
+end
+
+function final(self)
+    self.druid:final()
+end
