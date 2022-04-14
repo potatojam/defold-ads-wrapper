@@ -5,7 +5,7 @@ Ads Wrapper allows:
 * Use the same interface for working with different advertising services.
 * Advertising mediation - allows you to show ads from different sources.
 
-Supported networks: 
+Supported services: 
 
 * [Admob](#admob)
 * [Unity Ads](#unity-ads)
