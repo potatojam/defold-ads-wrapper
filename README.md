@@ -5,6 +5,16 @@ Ads Wrapper allows:
 * Use the same interface for working with different advertising services.
 * Advertising mediation - allows you to show ads from different sources.
 
+Supported networks: 
+
+* [Admob](#admob)
+* [Unity Ads](#unity-ads)
+* [Poki](#poki)
+* [Yandex](#yandex)
+* [Vk Bridge](#vk-bridge)
+
+Setting up [admob and unity ads](#admob-and-unity-ads) at the same time.
+
 ## Installation
 
 You can use it in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your `game.project` file and in the dependencies field add **a link to the ZIP file of a [specific release](https://github.com/potatojam/defold-ads-wrapper/tags).**
@@ -321,7 +331,312 @@ Constants are used to set network parameters
 * T_INTERSTITIAL <kbd>hash("T_INTERSTITIAL")</kbd>
 * T_BANNER <kbd>hash("T_BANNER")</kbd>
 
+## Platform
+
+This module can be used in network settings.
+
+```lua
+local platform = require("ads_wrapper.platform")
+```
+
+Constants:
+* PL_ANDROID <kbd>hash("PL_ANDROID")</kbd>
+* PL_IOS <kbd>hash("PL_IOS")</kbd>
+* PL_HTML5 <kbd>hash("PL_HTML5")</kbd>
+* PL_OTHER <kbd>hash("PL_OTHER")</kbd>
+
+### `platform.is_same(pl_value)`
+
+**Parameters**
+
+- pl_value <kbd>hash</kbd> _required_ One of the constants
+
+Сheck if the platform is correct
+
+**Return**
+
+- value <kbd>boolean</kbd>
+
+### `platform.get()`
+
+Returns current hash platform
+
+**Return**
+
+- value <kbd>hash</kbd>
+
 ## Networks
+
+You can use existing networks or create your own.
+
+## Admob
+
+The network uses [this](https://github.com/defold/extension-admob) extension.
+In the `debug` mode will always be used test keys.
+
+You need to set:
+* [ads_wrapper.T_INTERSTITIAL] <kbd>string</kbd> _required_ key for interstitial ads
+* [ads_wrapper.T_REWARDED] <kbd>string</kbd> _required_ key for rewarded ads
+* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+  * id <kbd>string</kbd> _required_ key for banner
+  * size <kbd>number</kbd> _optional_ banner size. Default `admob.SIZE_ADAPTIVE_BANNER`.
+  * position <kbd>number</kbd> _optional_ banner position. Default `admob.POS_NONE`.
+
+```lua
+-- Need to add the extension: https://github.com/defold/extension-admob/archive/master.zip
+local admob_module = require("ads_wrapper.ads_networks.admob")
+local admob_net_id = ads_wrapper.register_network(admob_module, {
+    [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
+    [ads_wrapper.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712",
+    [ads_wrapper.T_BANNER] = {
+        id = "ca-app-pub-3940256099942544/6300978111",
+        size = admob.SIZE_MEDIUM_RECTANGLE,
+        position = admob.POS_BOTTOM_LEFT
+    }
+})
+```
+
+## Unity Ads
+
+The network uses [this](https://github.com/AGulev/DefVideoAds) extension.
+In the `debug` mode will always be used test keys.
+
+You need to set:
+* ids <kbd>table</kbd> _required_ 
+  * [platform.PL_ANDROID] <kbd>string</kbd> key for android
+  * [platform.PL_IOS] <kbd>string</kbd> key for ios
+* [ads_wrapper.T_INTERSTITIAL] <kbd>string</kbd> _required_ key for interstitial ads
+* [ads_wrapper.T_REWARDED] <kbd>string</kbd> _required_ key for rewarded ads
+* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+  * id <kbd>string</kbd> _required_ key for banner
+  * size <kbd>table</kbd> _optional_ banner size. Default `{width = 320, height = 50}`.
+  * position <kbd>number</kbd> _optional_ banner position. Default `unityads.BANNER_POSITION_TOP_CENTER`.
+
+```lua
+-- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/master.zip
+local unity = require("ads_wrapper.ads_networks.unity")
+local platform = require("ads_wrapper.platform")
+local unity_net_id = ads_wrapper.register_network(unity, {
+    ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
+    [ads_wrapper.T_REWARDED] = "rewardedVideo",
+    [ads_wrapper.T_INTERSTITIAL] = "video",
+    [ads_wrapper.T_BANNER] = {id = "banner", size = {width = 720, height = 90}, position = unityads.BANNER_POSITION_BOTTOM_RIGHT}
+})
+```
+
+## Poki
+
+The network uses [this](https://github.com/AGulev/defold-poki-sdk) extension.
+Poki does not support banners. Also, there are no additional options.
+
+```lua
+-- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/main.zip
+local poki = require("ads_wrapper.ads_networks.poki")
+local poki_net_id = ads_wrapper.register_network(poki)
+```
+
+## Yandex
+
+The network uses [this](https://github.com/indiesoftby/defold-yagames) extension.
+
+You need to set:
+* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+  * id <kbd>string</kbd> _required_ key for banner
+  * size <kbd>table</kbd> _optional_ banner size. Default `{width = "100vw", height = "56vh"}`.
+  * position <kbd>number</kbd> _optional_ banner position. Default `{x = "0px", y = "0px"}`.
+
+Yandex must be configured in the module: `yandex.set_yandex_extention(yagames, sitelock)`
+
+```lua
+-- Need to add the extension: https://github.com/indiesoftby/defold-yagames/archive/master.zip
+local yandex = require("ads_wrapper.ads_networks.yandex")
+local yagames = require("yagames.yagames")
+local sitelock = require("yagames.sitelock")
+yandex.set_yandex_extention(yagames, sitelock)
+local yandex_net_id = ads_wrapper.register_network(yandex, {
+    [ads_wrapper.T_BANNER] = {
+        id = "[your id here]",
+        size = {width = "100vw", height = "56vh"},
+        position = {x = "0px", y = "0px"}
+    }
+})
+ads_wrapper.setup_video({{id = yandex_net_id, count = 1}}, 1)
+ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
+```
+
+## Vk Bridge
+
+The network uses [this](https://github.com/potatojam/defold-vkbridge) extension.
+
+You need to set:
+* [ads_wrapper.T_INTERSTITIAL] <kbd>table</kbd> _optional_
+  * interstitial_delay <kbd>number</kbd> _optional_ Delay in seconds. The ad will not be triggered until the time has passed since the last impression. The error will not be thrown.
+* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+  * count <kbd>number</kbd> _optional_ banner count. Default `1`.
+  * possition <kbd>string</kbd> _optional_ banner position. Default `top`.
+
+Yandex must be configured in the module: `vk.set_vkbridge_extention(vkbridge)`
+
+```lua
+-- Need to add the extension: https://github.com/potatojam/defold-vkbridge/archive/main.zip
+local vk = require("ads_wrapper.ads_networks.vk")
+local vkbridge = require("vkbridge.vkbridge")
+vk.set_vkbridge_extention(vkbridge)
+local vk_net_id = ads_wrapper.register_network(vk, {
+    [ads_wrapper.T_BANNER] = {count = 1, possition = "top"},
+    [ads_wrapper.T_INTERSTITIAL] = {interstitial_delay = 60}
+})
+```
+
+## Admob and Unity Ads
+
+Example for two networks:
+
+```lua
+-- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/master.zip
+local unity = require("ads_wrapper.ads_networks.unity")
+local unity_net_id = ads_wrapper.register_network(unity, {
+    ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
+    [ads_wrapper.T_REWARDED] = "rewardedVideo",
+    [ads_wrapper.T_INTERSTITIAL] = "video",
+    [ads_wrapper.T_BANNER] = {id = "banner", size = {width = 720, height = 90}, position = unityads.BANNER_POSITION_BOTTOM_RIGHT}
+})
+-- Need to add the extension: https://github.com/defold/extension-admob/archive/master.zip
+local admob_module = require("ads_wrapper.ads_networks.admob")
+local admob_net_id = ads_wrapper.register_network(admob_module, {
+    [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
+    [ads_wrapper.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712",
+    [ads_wrapper.T_BANNER] = {
+        id = "ca-app-pub-3940256099942544/6300978111",
+        size = admob.SIZE_MEDIUM_RECTANGLE,
+        position = admob.POS_BOTTOM_LEFT
+    }
+})
+ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = dmob_net_id, count = 3}}, 6)
+ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 2)
+ads_wrapper.init(true, true, function(response)
+    pprint(response)
+end)
+```
+
+## Test Networks
+
+You can disable comments: 
+
+```lua
+test.is_debug = false
+```
+
+Example:
+
+```lua
+local test = require("ads_wrapper.ads_networks.test")
+local test_1_id = ads_wrapper.register_network(test.network1, {param = "test_param 1"})
+local test_2_id = ads_wrapper.register_network(test.network2, {param = "test_param 2"})
+ads_wrapper.setup_video({{id = test_1_id, count = 1}, {id = test_2_id, count = 2}, {id = test_1_id, ount = 2}}, 4)
+ads_wrapper.setup_banner({{id = test_1_id, count = 1}})
+ads_wrapper.init(true, true, function(response)
+    pprint(response)
+end)
+```
+
+## Network Creation
+
+You can create your own network.
+It is best to look at already made networks.
+
+The module must have constan:
+
+* NAME <kbd>string</kbd> Network name
+
+Function:
+* setup(options) Called when the network is registered
+* init(callback)
+* request_idfa(callback) Optional
+* is_supported() Return `boolean`
+* is_initialized() Return `boolean`
+* load_rewarded(callback)
+* show_rewarded(callback)
+* is_rewarded_loaded() Return `boolean`
+* show_interstitial(callback)
+* load_interstitial(callback)
+* is_interstitial_loaded() Return `boolean`
+* load_banner(callback)
+* unload_banner(callback)
+* is_banner_loaded() Return `boolean`
+* show_banner() Return [response](#response)
+* hide_banner() Return [response](#response)
+
+Callback functions must be called **asynchronously** and the [response](#response) parameter must be passed.
+
+Example:
+
+```lua
+timer.delay(0, false, function()
+    callback(response)
+end)
+```
+
+## Helper
+
+Helps create [responses](#response). Require:
+
+```lua
+local helper = require("ads_wrapper.ads_networks.helper")
+```
+
+### `helper.success(message, data)`
+
+Creates response `{result = events.SUCCESS, message = message, data = data}`
+
+**Parameters**
+
+- message <kbd>string</kbd> _optional_
+- data <kbd>any</kbd> _optional_
+
+### `helper.skipped(message)`
+
+Creates response `{result = events.SUCCESS, code = events.C_SKIPPED, message = message}`
+
+**Parameters**
+
+- message <kbd>string</kbd> _optional_
+
+### `helper.error(message, code)`
+
+Creates response `{result = events.ERROR, code = code, message = message}`
+
+**Parameters**
+
+- message <kbd>string</kbd> _optional_
+- code <kbd>hash</kbd> _optional_ Default `events.C_ERROR_UNKNOWN`
+
+### `helper.abort(message)`
+
+Used in internal processing.
+Creates response `{result = events.ABORT, message = message}`
+
+**Parameters**
+
+- message <kbd>string</kbd> _optional_
+
+## Debug mode
+
+You can include output to the console of all operations that are done when calling functions with the queue.
+
+```lua
+local events = require("ads_wrapper.events")
+local queue = require("ads_wrapper.queue")
+
+queue.set_verbose_mode(events.V_ALL)
+```
+
+Constants:
+
+* events.V_NONE <kbd>hash("V_NONE")</kbd> Output nothing. Default value.
+* events.V_ERROR <kbd>hash("V_ERROR")</kbd> Show all errors
+* events.V_SUCCESS <kbd>hash("V_SUCCESS")</kbd> Show all success responses
+* events.V_ALL <kbd>hash("V_ALL")</kbd> Show all messages
 
 ## Credits
 

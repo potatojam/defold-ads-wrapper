@@ -150,10 +150,6 @@ local function init_mobiles(self)
         -- Need to add the extension: https://github.com/defold/extension-admob/archive/master.zip
         local admob_module = require("ads_wrapper.ads_networks.admob")
         local admob_net_id = ads_wrapper.register_network(admob_module, {
-            ids = {
-                [platform.PL_ANDROID] = "0", -- it doesn't need for admob
-                [platform.PL_IOS] = "0"
-            },
             [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
             [ads_wrapper.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712",
             [ads_wrapper.T_BANNER] = {
