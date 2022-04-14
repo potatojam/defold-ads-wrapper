@@ -45,13 +45,21 @@ end
 ---@param mediator mediator
 ---@param networks table array with all available networks
 ---@param order table order of show ad. Array with objects like `{id = net_id, count = 2}`
----@param repeat_count number count for repeat
+---@param repeat_count number count of ads that will loop. From the end
 function M.setup(mediator, networks, order, repeat_count)
-    mediator.repeater = repeat_count or 0
+    local is_auto_repeat = false
+    if not repeat_count then
+        is_auto_repeat = true
+    else
+        mediator.repeater = repeat_count
+    end
     for _, network_data in ipairs(order) do
         local id = network_data.id
         if id then
             local count = network_data.count or 1
+            if is_auto_repeat then
+                mediator.repeater = mediator.repeater + count
+            end
             for i = 1, count do
                 mediator.networks[id] = networks[id]
                 mediator.order[#mediator.order + 1] = networks[id]
@@ -177,7 +185,7 @@ function M.add_networks(to, from)
     if from and from.networks then
         for id, network in pairs(from.networks) do
             to.networks[id] = network
-        end 
+        end
     end
 end
 

@@ -262,7 +262,7 @@ function M.show_interstitial(callback)
     end
 end
 
----Loads banner for all setup networks.
+---Loads banner for for next network.
 ---@param callback function the function is called after execution.
 function M.load_banner(callback)
     if M.is_banner_setup() then

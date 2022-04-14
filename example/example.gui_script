@@ -2,9 +2,6 @@ local druid = require("druid.druid")
 local ads_wrapper = require("ads_wrapper.ads_wrapper")
 local platform = require("ads_wrapper.platform")
 
-local C_RED = vmath.vector4(1, 0, 0, 1)
-local C_GREEN = vmath.vector4(0, 1, 0, 1)
-
 ---https://stackoverflow.com/questions/6075262/lua-table-tostringtablename-and-table-fromstringstringtable-functions
 local function serializeTable(val, name, skipnewlines, depth)
     skipnewlines = skipnewlines or false
@@ -130,8 +127,8 @@ local function init_test(self)
     local test = require("ads_wrapper.ads_networks.test")
     local test_1_id = ads_wrapper.register_network(test.network1, {param = "test_param 1"})
     local test_2_id = ads_wrapper.register_network(test.network2, {param = "test_param 2"})
-    ads_wrapper.setup_video({{id = test_2_id, count = 1}, {id = test_1_id}}, 2)
-    ads_wrapper.setup_banner({{id = test_1_id, count = 1}}, 1)
+    ads_wrapper.setup_video({{id = test_1_id, count = 1}, {id = test_2_id, count = 2}, {id = test_1_id, count = 2}}, 4)
+    ads_wrapper.setup_banner({{id = test_1_id, count = 1}})
     ads_wrapper.init(true, true, function(response)
         print_log(self, "init_test", response)
     end)
@@ -168,6 +165,7 @@ local function init_mobiles(self)
 
         ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
         ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 6)
+        print_log(self, "init_mobiles", "Admob and Unity Ads set up")
     else
         print_log(self, "init_mobiles", "Mobiles not support on this platform")
     end
@@ -180,7 +178,7 @@ local function init_poki(self)
         -- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/main.zip
         local poki = require("ads_wrapper.ads_networks.poki")
         local poki_net_id = ads_wrapper.register_network(poki)
-        ads_wrapper.setup_video({{id = poki_net_id, count = 1}}, 1)
+        ads_wrapper.setup_video({{id = poki_net_id}})
         print_log(self, "init_poki", "Poki set up")
         -- Poki has no banners
     else

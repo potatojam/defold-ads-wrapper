@@ -6,8 +6,8 @@ ads_wrapper.T_INTERSTITIAL = hash("T_INTERSTITIAL")
 ads_wrapper.T_BANNER = hash("T_BANNER")
 
 ---Registers network. Returns id
----@param network network
----@param params any parameters to be passed to the network.setup function
+---@param network network network module
+---@param params any network options
 ---@return number|nil
 function ads_wrapper.register_network(network, params)
 end
@@ -29,9 +29,9 @@ end
 function ads_wrapper.is_internet_connected()
 end
 
----Initializes all networks.
----@param initilize_video boolean
----@param initilize_banner boolean
+---Initializes ads_wrapper.
+---@param initilize_video boolean check if need to initialize video networks
+---@param initilize_banner boolean check if need to initialize banner networks
 ---@param callback function the function is called after execution.
 function ads_wrapper.init(initilize_video, initilize_banner, callback)
 end
@@ -99,6 +99,10 @@ end
 ---Check if ads wrapper is initiailzed
 ---@return boolean
 function ads_wrapper.is_initialized()
+end
+
+---Remove all registered networks
+function ads_wrapper.clear_networks()
 end
 
 return ads_wrapper
