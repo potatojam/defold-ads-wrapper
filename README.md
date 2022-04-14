@@ -191,6 +191,7 @@ Setups banner mediator. More info [here](#mediators).
 ### `ads_wrapper.init(initilize_video, initilize_banner, callback)`
 
 Initializes ads_wrapper. Callback consists `responses` field.
+
 Queue: `check_connection->request_idfa->init`
 
 **Parameters**
@@ -201,7 +202,8 @@ Queue: `check_connection->request_idfa->init`
 
 ### `ads_wrapper.init_video_networks(callback)`
 
-Initialize video networks. 
+Initialize video networks.
+
 Queue: `check_connection->request_idfa->init`
 
 **Parameters**
@@ -210,7 +212,8 @@ Queue: `check_connection->request_idfa->init`
 
 ### `ads_wrapper.init_banner_networks(callback)`
 
-Initialize banner networks. 
+Initialize banner networks.
+
 Queue: `check_connection->request_idfa->init`
 
 **Parameters**
@@ -220,6 +223,7 @@ Queue: `check_connection->request_idfa->init`
 ### `ads_wrapper.load_rewarded(callback)`
 
 Loads rewarded ads for next network.
+
 Queue: `check_connection->request_idfa->init->load_rewarded`
 
 **Parameters**
@@ -228,7 +232,8 @@ Queue: `check_connection->request_idfa->init->load_rewarded`
 
 ### `ads_wrapper.show_rewarded(callback)`
 
-Shows rewarded ads for next network. Callback contain a special `code` field with [events.C_SKIPPED](#response-codes) if the user skipped the ad. 
+Shows rewarded ads for next network. Callback contain a special `code` field with [events.C_SKIPPED](#response-codes) if the user skipped the ad.
+
 Queue: `check_connection->request_idfa->init->load_rewarded->show_rewarded`
 
 **Parameters**
@@ -238,6 +243,7 @@ Queue: `check_connection->request_idfa->init->load_rewarded->show_rewarded`
 ### `ads_wrapper.load_interstitial(callback)`
 
 Loads interstitial ads for next network.
+
 Queue: `check_connection->request_idfa->init->load_interstitial`
 
 **Parameters**
@@ -247,6 +253,7 @@ Queue: `check_connection->request_idfa->init->load_interstitial`
 ### `ads_wrapper.show_interstitial(callback)`
 
 Shows interstitial ads for next network.
+
 Queue: `check_connection->request_idfa->init->load_interstitial->show_interstitial`
 
 **Parameters**
@@ -256,6 +263,7 @@ Queue: `check_connection->request_idfa->init->load_interstitial->show_interstiti
 ### `ads_wrapper.load_banner(callback)`
 
 Loads banner for for next network.
+
 Queue: `check_connection->request_idfa->init->load_banner`
 
 **Parameters**
@@ -265,6 +273,7 @@ Queue: `check_connection->request_idfa->init->load_banner`
 ### `ads_wrapper.show_banner(callback)`
 
 Shows setup banner for next network. Hides the previous banner if it was displayed.
+
 Queue: `check_connection->request_idfa->init->load_banner->show_banner`
 
 **Parameters**
@@ -512,7 +521,7 @@ local admob_net_id = ads_wrapper.register_network(admob_module, {
         position = admob.POS_BOTTOM_LEFT
     }
 })
-ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = dmob_net_id, count = 3}}, 6)
+ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
 ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 2)
 ads_wrapper.init(true, true, function(response)
     pprint(response)
