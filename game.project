@@ -15,12 +15,12 @@ minimum_sdk_version = 19
 
 [project]
 title = Ads Wrapper
-version = 0.6.0
+version = 0.6.1
 dependencies#0 = https://github.com/andsve/dirtylarry/archive/master.zip
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.7.0.zip
-dependencies#2 = https://github.com/AGulev/DefVideoAds/archive/master.zip
-dependencies#3 = https://github.com/defold/extension-admob/archive/master.zip
-dependencies#4 = https://github.com/AGulev/defold-poki-sdk/archive/main.zip
+dependencies#2 = https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.1.2.zip
+dependencies#3 = https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
+dependencies#4 = https://github.com/AGulev/defold-poki-sdk/archive/refs/tags/1.3.0.zip
 
 [library]
 include_dirs = ads_wrapper

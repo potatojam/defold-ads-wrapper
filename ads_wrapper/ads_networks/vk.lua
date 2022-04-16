@@ -1,6 +1,5 @@
 local M = {NAME = "vk"}
 -- Extention: https://github.com/potatojam/defold-vkbridge
--- TODO: add delay for one user for a day
 
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
@@ -17,8 +16,6 @@ local is_fresh_banner = false
 local banner_loaded = false
 local banner_showed = false
 local banner_configs = {count = 1, position = "top"}
-local interstitial_last_time = nil
-local interstitial_delay = nil
 
 -- Call saved `module_callback` only once. Send result.
 ---@param result any
@@ -118,7 +115,10 @@ local function on_interstitial_showed(self, err, data)
     else
         if data.result then
             local response = helper.success()
-            response.was_open = true
+            response.was_open = not data.exceeded
+            response.delay_exceeded = data.delay_exceeded
+            response.hour_limit_exceeded = data.hour_limit_exceeded
+            response.day_limit_exceeded = data.day_limit_exceeded
             callback_once(response)
         else
             callback_once(helper.error("VK: on_interstitial_showed: Ads unavailable"))
@@ -162,12 +162,6 @@ function M.setup(params)
         end
         if banner_settings.position then
             M.set_banner_position(banner_settings.position)
-        end
-    end
-    local interstitial_settings = parameters[ads.T_INTERSTITIAL]
-    if interstitial_settings then
-        if interstitial_settings.interstitial_delay then
-            interstitial_delay = interstitial_settings.interstitial_delay
         end
     end
 end
@@ -214,13 +208,6 @@ end
 -- Shows interstitial popup.
 ---@param callback function the function is called after execution.
 function M.show_interstitial(callback)
-    if interstitial_delay and interstitial_last_time and socket.gettime() - interstitial_last_time < interstitial_delay then
-        local response = helper.success("Ads are not shown. The ad delay worked.")
-        response.was_open = false
-        callback_delay(callback, response)
-        return
-    end
-    interstitial_last_time = socket.gettime()
     module_callback = callback
     vkbridge.show_interstitial(on_interstitial_showed)
 end
