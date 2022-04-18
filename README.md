@@ -331,7 +331,7 @@ Checks for internet connection
 ### `ads_wrapper.is_interstitial_loaded(check_current)`
 
 Check if the interstitial video is loaded.
-Default checks the following network in mediator.
+Default checks the `next` network in mediator.
 
 **Parameters**
 
@@ -344,7 +344,7 @@ Default checks the following network in mediator.
 ### `ads_wrapper.is_rewarded_loaded(check_current)`
 
 Check if the rewarded video is loaded.
-Default checks the following network in mediator.
+Default checks the `next` network in mediator.
 
 **Parameters**
 
@@ -357,7 +357,7 @@ Default checks the following network in mediator.
 ### `ads_wrapper.is_banner_loaded(check_current)`
 
 Check if the banner is loaded.
-Default checks the following network in mediator.
+Default checks the `next` network in mediator.
 
 **Parameters**
 

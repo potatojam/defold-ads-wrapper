@@ -106,21 +106,21 @@ function ads_wrapper.clear_networks()
 end
 
 ---Check if the interstitial video is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean if need check current network. Default `false`
 ---@return boolean
 function ads_wrapper.is_interstitial_loaded(check_current)
 end
 
 ---Check if the rewarded video is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean if need check current network. Default `false`
 ---@return boolean
 function ads_wrapper.is_rewarded_loaded(check_current)
 end
 
 ---Check if the banner is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean if need check current network. Default `false`
 ---@return boolean
 function ads_wrapper.is_banner_loaded(check_current)

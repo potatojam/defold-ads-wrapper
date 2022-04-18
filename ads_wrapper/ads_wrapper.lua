@@ -321,7 +321,7 @@ function M.is_initialized()
 end
 
 ---Check if the interstitial video is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_interstitial_loaded(check_current)
@@ -333,7 +333,7 @@ function M.is_interstitial_loaded(check_current)
 end
 
 ---Check if the rewarded video is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_rewarded_loaded(check_current)
@@ -345,7 +345,7 @@ function M.is_rewarded_loaded(check_current)
 end
 
 ---Check if the banner is loaded.
----Default checks the following network in mediator.
+---Default checks the `next` network in mediator.
 ---@param check_current boolean `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_banner_loaded(check_current)
