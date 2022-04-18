@@ -51,6 +51,8 @@ local function print_log(self, method, data)
         else
             text = text .. tostring(data)
         end
+    else
+        text = text .. "nil"
     end
     self.logs = self.logs .. text .. "\n"
     local max = 2000
@@ -120,6 +122,27 @@ local function on_init_banner(self)
     ads_wrapper.init_banner_networks(function(response)
         print_log(self, "init_banner_networks", response)
     end)
+end
+
+local function is_rewarded_loaded(self)
+    local value = ads_wrapper.is_rewarded_loaded()
+    local network = ads_wrapper.get_current_network()
+    local next_network = ads_wrapper.get_next_network()
+    print_log(self, "is_rewarded_loaded", {value = value, current = network.NAME, next = next_network.NAME})
+end
+
+local function is_interstitial_loaded(self)
+    local value = ads_wrapper.is_interstitial_loaded()
+    local network = ads_wrapper.get_current_network()
+    local next_network = ads_wrapper.get_next_network()
+    print_log(self, "is_interstitial_loaded", {value = value, current = network.NAME, next = next_network.NAME})
+end
+
+local function is_banner_loaded(self)
+    local value = ads_wrapper.is_banner_loaded()
+    local network = ads_wrapper.get_current_network(true)
+    local next_network = ads_wrapper.get_next_network(true)
+    print_log(self, "is_banner_loaded", {value = value, current = network.NAME, next = next_network.NAME})
 end
 
 local function init_test(self)
@@ -207,7 +230,7 @@ local function init_vk(self)
     if platform.is_same(platform.PL_HTML5) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/potatojam/defold-vkbridge/archive/refs/tags/1.0.1.zip
+        -- Need to add the extension: https://github.com/potatojam/defold-vkbridge/archive/refs/tags/1.0.2.zip
         pprint("Please uncomment lines when you adding extension")
         -- local vk = require("ads_wrapper.ads_networks.vk")
         -- local vkbridge = require("vkbridge.vkbridge")
@@ -249,6 +272,9 @@ function init(self)
     self.druid:new_button("btn_init_poki", init_poki)
     self.druid:new_button("btn_init_yandex", init_yandex)
     self.druid:new_button("btn_init_vk", init_vk)
+    self.druid:new_button("btn_is_rewarded_loaded", is_rewarded_loaded)
+    self.druid:new_button("btn_is_interstitial_loaded", is_interstitial_loaded)
+    self.druid:new_button("btn_is_banner_loaded", is_banner_loaded)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     init_test(self)

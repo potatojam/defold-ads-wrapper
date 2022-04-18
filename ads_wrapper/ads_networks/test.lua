@@ -13,6 +13,7 @@ end
 M.network1 = {
     _is_initialized = false,
     _is_reward_loaded = false,
+    _is_interstitial_loaded = false,
     _is_banner_loaded = false,
     _is_banner_showed = false,
     parameters = nil,
@@ -44,7 +45,7 @@ M.network1 = {
     show_rewarded = function(callback)
         dprint(M.network1.NAME, "ads.show_rewarded()")
         timer.delay(0, false, function()
-            M.network1._is_reward_loaded = false
+            M.network1._is_reward_loaded = true
             callback(helper.success())
         end)
     end,
@@ -71,12 +72,13 @@ M.network1 = {
 
     is_interstitial_loaded = function()
         dprint(M.network1.NAME, "ads.is_interstitial_loaded()")
-        return false
+        return M.network1._is_interstitial_loaded
     end,
 
     load_interstitial = function(callback)
         dprint(M.network1.NAME, "ads.load_interstitial()")
         timer.delay(0, false, function()
+            M.network1._is_interstitial_loaded = true
             callback(helper.success())
         end)
     end,
@@ -146,6 +148,7 @@ M.network1 = {
 M.network2 = {
     _is_initialized = false,
     __is_reward_loaded = false,
+    _is_interstitial_loaded = false,
     _is_banner_loaded = false,
     _is_banner_showed = false,
     parameters = nil,
@@ -177,15 +180,15 @@ M.network2 = {
     show_rewarded = function(callback)
         dprint(M.network2.NAME, "ads.show_rewarded()")
         timer.delay(0, false, function()
-            M.network2._is_reward_loaded = false
-            callback(helper.error("Some error message"))
+            M.network2._is_reward_loaded = true
+            callback(helper.success())
         end)
     end,
 
     load_rewarded = function(callback)
         dprint(M.network2.NAME, "ads.load_rewarded()")
         timer.delay(0, false, function()
-            M.network2._is_reward_loaded = false
+            M.network2._is_reward_loaded = true
             callback(helper.success())
         end)
     end,
@@ -197,11 +200,12 @@ M.network2 = {
 
     is_interstitial_loaded = function()
         dprint(M.network2.NAME, "ads.is_interstitial_loaded()")
-        return true
+        return M.network2._is_interstitial_loaded
     end,
 
     load_interstitial = function(callback)
         dprint(M.network2.NAME, "ads.load_interstitial()")
+        M.network2._is_interstitial_loaded = true
         timer.delay(0, false, function()
             callback(helper.success())
         end)

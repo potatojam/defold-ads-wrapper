@@ -71,9 +71,9 @@ end
 
 ---Returns the next network in the queue
 ---@param mediator mediator
----@param is_load bool used for load
+---@param leave_pointer bool leaves the pointer on the same network. Default `false`
 ---@return table
-function M.get_next_network(mediator, is_load)
+function M.get_next_network(mediator, leave_pointer)
     local network_num = mediator.current_network_num + 1
     if #mediator.order < network_num then
         network_num = network_num - mediator.repeater
@@ -81,7 +81,7 @@ function M.get_next_network(mediator, is_load)
             network_num = 1
         end
     end
-    if not is_load then
+    if not leave_pointer then
         mediator.current_network_num = network_num
         mediator.repeat_num = (#mediator.order - mediator.repeater) < network_num and mediator.repeater or (#mediator.order - network_num)
     end
@@ -138,6 +138,26 @@ function M.call_current(mediator, q, callback)
     co = coroutine.create(function()
         local response = helper.error("Something bad happened")
         local network = M.get_current_network(mediator)
+        queue.run(q, network, function(fn_response)
+            fn_response.name = network.NAME
+            response = fn_response
+            resume(co)
+        end)
+        coroutine.yield(co)
+        handle(callback, response)
+    end)
+    resume(co)
+end
+
+---Tries to complete queue for next network in mediator. Pointer does not switch
+---@param mediator mediator
+---@param q queue queue object
+---@param callback function callback accepting the response result
+function M.call_next(mediator, q, callback)
+    local co
+    co = coroutine.create(function()
+        local response = helper.error("Something bad happened")
+        local network = M.get_next_network(mediator, true)
         queue.run(q, network, function(fn_response)
             fn_response.name = network.NAME
             response = fn_response

@@ -226,7 +226,7 @@ end
 ---@param callback function the function is called after execution.
 function M.load_rewarded(callback)
     if M.is_video_setup() then
-        mediator.call(video_mediator, queues.load_rewarded, callback)
+        mediator.call_next(video_mediator, queues.load_rewarded, callback)
     else
         mediator_error(VIDEO, callback)
     end
@@ -246,7 +246,7 @@ end
 ---@param callback function the function is called after execution.
 function M.load_interstitial(callback)
     if M.is_video_setup() then
-        mediator.call(video_mediator, queues.load_interstitial, callback)
+        mediator.call_next(video_mediator, queues.load_interstitial, callback)
     else
         mediator_error(VIDEO, callback)
     end
@@ -266,7 +266,7 @@ end
 ---@param callback function the function is called after execution.
 function M.load_banner(callback)
     if M.is_banner_setup() then
-        mediator.call(banner_mediator, queues.load_banner, callback)
+        mediator.call_next(banner_mediator, queues.load_banner, callback)
     else
         mediator_error(BANNER, callback)
     end
@@ -318,6 +318,68 @@ end
 ---@return boolean
 function M.is_initialized()
     return initialized
+end
+
+---Check if the interstitial video is loaded.
+---Default checks the following network in mediator.
+---@param check_current boolean `Optional` if need check current network. Default `false`
+---@return boolean
+function M.is_interstitial_loaded(check_current)
+    if not M.is_video_setup() then
+        return false
+    end
+    local network = check_current and mediator.get_current_network(video_mediator) or mediator.get_next_network(video_mediator, true)
+    return network and network.is_interstitial_loaded()
+end
+
+---Check if the rewarded video is loaded.
+---Default checks the following network in mediator.
+---@param check_current boolean `Optional` if need check current network. Default `false`
+---@return boolean
+function M.is_rewarded_loaded(check_current)
+    if not M.is_video_setup() then
+        return false
+    end
+    local network = check_current and mediator.get_current_network(video_mediator) or mediator.get_next_network(video_mediator, true)
+    return network and network.is_rewarded_loaded()
+end
+
+---Check if the banner is loaded.
+---Default checks the following network in mediator.
+---@param check_current boolean `Optional` if need check current network. Default `false`
+---@return boolean
+function M.is_banner_loaded(check_current)
+    if not M.is_banner_setup() then
+        return false
+    end
+    local network = check_current and mediator.get_current_network(banner_mediator) or mediator.get_next_network(banner_mediator, true)
+    return network and network.is_banner_loaded()
+end
+
+---Returns the current network pointed to by mediator
+---Default returns for the video mediator
+---@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
+---@return table
+function M.get_current_network(check_banner)
+    local used_mediator = check_banner and banner_mediator or video_mediator
+    if not used_mediator then
+        return nil
+    end
+    local network = mediator.get_current_network(used_mediator)
+    return network
+end
+
+---Returns the next network pointed to by mediator
+---Default returns for the video mediator
+---@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
+---@return table
+function M.get_next_network(check_banner)
+    local used_mediator = check_banner and banner_mediator or video_mediator
+    if not used_mediator then
+        return nil
+    end
+    local network = mediator.get_next_network(used_mediator, true)
+    return network
 end
 
 return M

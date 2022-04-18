@@ -11,7 +11,7 @@ local module_callback
 local is_ready = {}
 local banner_loaded = false
 local banner_showed = false
-local banner_configs 
+local banner_configs
 if unityads then
     banner_configs = {size = {width = 320, height = 50}, position = unityads.BANNER_POSITION_TOP_CENTER}
 end
@@ -178,6 +178,7 @@ function M.setup(params)
             parameters[ads.T_REWARDED] = "rewardedVideo" -- test unit for rewarded
         end
     end
+    is_ready = {[parameters[ads.T_INTERSTITIAL]] = false, [parameters[ads.T_REWARDED]] = false}
 end
 
 ---Initializes `unityads` sdk.
@@ -227,7 +228,7 @@ end
 ---Check if the rewarded ads is loaded
 ---@return boolean
 function M.is_rewarded_loaded()
-    return is_ready[ads.T_REWARDED]
+    return is_ready[parameters[ads.T_REWARDED]]
 end
 
 ---Shows interstitial ads.
@@ -249,7 +250,7 @@ end
 ---Check if the interstitial ads is loaded
 ---@return boolean
 function M.is_interstitial_loaded()
-    return is_ready[ads.T_INTERSTITIAL]
+    return is_ready[parameters[ads.T_INTERSTITIAL]]
 end
 
 ---Check if the banner is set up

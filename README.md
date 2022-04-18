@@ -328,6 +328,71 @@ Checks for internet connection
 
 - value <kbd>boolean</kbd>
 
+### `ads_wrapper.is_interstitial_loaded(check_current)`
+
+Check if the interstitial video is loaded.
+Default checks the following network in mediator.
+
+**Parameters**
+
+- check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+
+**Return**
+
+- value <kbd>boolean</kbd>
+
+### `ads_wrapper.is_rewarded_loaded(check_current)`
+
+Check if the rewarded video is loaded.
+Default checks the following network in mediator.
+
+**Parameters**
+
+- check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+
+**Return**
+
+- value <kbd>boolean</kbd>
+
+### `ads_wrapper.is_banner_loaded(check_current)`
+
+Check if the banner is loaded.
+Default checks the following network in mediator.
+
+**Parameters**
+
+- check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+
+**Return**
+
+- value <kbd>boolean</kbd>
+
+### `ads_wrapper.get_current_network(check_banner)`
+
+Returns the current network pointed to by mediator
+Default returns for the video mediator
+
+**Parameters**
+
+- check_banner <kbd>boolean</kbd> _optional_ if need to return mediator for banners. Default `false`
+
+**Return**
+
+- network <kbd>table|nil</kbd>
+
+### `ads_wrapper.get_next_network(check_banner)`
+
+Returns the next network pointed to by mediator
+Default returns for the video mediator
+
+**Parameters**
+
+- check_banner <kbd>boolean</kbd> _optional_ if need to return mediator for banners. Default `false`
+
+**Return**
+
+- network <kbd>table|nil</kbd>
+
 ### `ads_wrapper.clear_networks()`
 
 Remove all registered networks
@@ -480,7 +545,7 @@ ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
 ## Vk Bridge
 
 The network uses [this](https://github.com/potatojam/defold-vkbridge) extension.
-Verified version: **1.0.1**
+Verified version: **1.0.2**
 
 You need to set:
 * [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
@@ -490,7 +555,7 @@ You need to set:
 Yandex must be configured in the module: `vk.set_vkbridge_extention(vkbridge)`
 
 ```lua
--- Need to add the extension: https://github.com/potatojam/defold-vkbridge/archive/refs/tags/1.0.1.zip
+-- Need to add the extension: https://github.com/potatojam/defold-vkbridge/archive/refs/tags/1.0.2.zip
 local vk = require("ads_wrapper.ads_networks.vk")
 local vkbridge = require("vkbridge.vkbridge")
 vk.set_vkbridge_extention(vkbridge)
