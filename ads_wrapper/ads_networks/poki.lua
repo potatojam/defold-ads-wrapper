@@ -36,7 +36,7 @@ end
 -- Called when a interstitial is closed.
 ---@param self userdata script data
 local function adv_close(self)
-    if poki_sdk.is_adblock_active() then
+    if poki_sdk.is_ad_blocked() then
         callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
     else
         callback_once(helper.success())
@@ -46,7 +46,7 @@ end
 -- Called when a rewarded video is closed.
 ---@param self userdata script data
 local function rewarded_close(self, success)
-    if poki_sdk.is_adblock_active() then
+    if poki_sdk.is_ad_blocked() then
         callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
     else
         if success then
