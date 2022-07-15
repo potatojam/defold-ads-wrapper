@@ -95,7 +95,11 @@ end
 ---@param callback function the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
-    poki_sdk.rewarded_break(rewarded_close)
+    if poki_sdk.is_ad_blocked() then
+        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
+    else
+        poki_sdk.rewarded_break(rewarded_close)
+    end
 end
 
 -- Not used.
@@ -115,7 +119,11 @@ end
 ---@param callback function the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
-    poki_sdk.commercial_break(adv_close)
+    if poki_sdk.is_ad_blocked() then
+        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
+    else
+        poki_sdk.commercial_break(adv_close)
+    end
 end
 
 -- Not used.
