@@ -70,7 +70,7 @@ function M.init(callback)
     if M.is_supported() then
         is_poki_initialized = true
         if ads.is_debug then
-            poki_sdk.set_debug(false)
+            poki_sdk.set_debug(true)
         end
         callback_once(helper.success())
     else
