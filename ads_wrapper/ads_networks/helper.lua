@@ -3,7 +3,7 @@ local events = require("ads_wrapper.events")
 local M = {}
 
 ---Creates response `{result = events.SUCCESS, message = message, data = data}`
----@param message string help info
+---@param message string|nil help info
 ---@param data any
 ---@return table
 function M.success(message, data)

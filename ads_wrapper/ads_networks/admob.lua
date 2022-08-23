@@ -80,7 +80,7 @@ local function admob_callback(self, message_id, message)
             callback_once(helper.success())
         elseif message.event == admob.EVENT_NOT_LOADED then
             callback_once(helper.error(
-                              "ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                              "ADMOB: EVENT_NOT_LOADED: can't call show_interstitial() before EVENT_LOADED\nCode: " .. tostring(message.code) .. "\nError: " ..
                                   tostring(message.error)))
         elseif message.event == admob.EVENT_IMPRESSION_RECORDED then
             -- print("EVENT_IMPRESSION_RECORDED: Interstitial did record impression")
