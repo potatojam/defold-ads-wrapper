@@ -36,6 +36,8 @@ The network uses [this](https://github.com/defold/extension-admob) extension.
 In the `debug` mode will always be used test keys.
 Verified version: **2.1.2**
 
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
+
 You need to set:
 * [ads_wrapper.T_INTERSTITIAL] <kbd>string</kbd> _required_ key for interstitial ads
 * [ads_wrapper.T_REWARDED] <kbd>string</kbd> _required_ key for rewarded ads
@@ -104,6 +106,8 @@ local poki_net_id = ads_wrapper.register_network(poki)
 The network uses [this](https://github.com/indiesoftby/defold-yagames) extension.
 Verified version: **0.7.4**
 
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
+
 You need to set:
 * [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
   * id <kbd>string</kbd> _required_ key for banner
@@ -134,6 +138,8 @@ ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
 The network uses [this](https://github.com/potatojam/defold-vkbridge) extension.
 Verified version: **1.0.2**
 
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
+
 You need to set:
 * [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
   * count <kbd>number</kbd> _optional_ banner count. Default `1`.
@@ -155,9 +161,10 @@ local vk_net_id = ads_wrapper.register_network(vk, {
 
 > &#x26a0;&#xfe0f; The current version only supports Android
 
-
 The network uses [this](https://github.com/alexeyfeskov/defold-maxsdk) extension.
 Verified version: **11.4.4**
+
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
 
 You need to set:
 * [ads_wrapper.T_INTERSTITIAL] <kbd>string</kbd> _required_ key for interstitial ads
