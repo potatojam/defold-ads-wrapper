@@ -9,6 +9,27 @@
 * [Applovin Max](#applovin-max)
 * [Admob and Unity Ads](#admob-and-unity-ads)
 
+## Test Networks
+
+You can disable comments: 
+
+```lua
+test.is_debug = false
+```
+
+Example:
+
+```lua
+local test = require("ads_wrapper.ads_networks.test")
+local test_1_id = ads_wrapper.register_network(test.network1, {param = "test_param 1"})
+local test_2_id = ads_wrapper.register_network(test.network2, {param = "test_param 2"})
+ads_wrapper.setup_video({{id = test_1_id, count = 1}, {id = test_2_id, count = 2}, {id = test_1_id, ount = 2}}, 4)
+ads_wrapper.setup_banner({{id = test_1_id, count = 1}})
+ads_wrapper.init(true, true, function(response)
+    pprint(response)
+end)
+```
+
 ## Admob
 
 The network uses [this](https://github.com/defold/extension-admob) extension.
@@ -130,58 +151,6 @@ local vk_net_id = ads_wrapper.register_network(vk, {
 })
 ```
 
-## Admob and Unity Ads
-
-Example for two networks:
-
-```lua
--- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
-local unity = require("ads_wrapper.ads_networks.unity")
-local unity_net_id = ads_wrapper.register_network(unity, {
-    ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
-    [ads_wrapper.T_REWARDED] = "rewardedVideo",
-    [ads_wrapper.T_INTERSTITIAL] = "video",
-    [ads_wrapper.T_BANNER] = {id = "banner", size = {width = 720, height = 90}, position = unityads.BANNER_POSITION_BOTTOM_RIGHT}
-})
--- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
-local admob_module = require("ads_wrapper.ads_networks.admob")
-local admob_net_id = ads_wrapper.register_network(admob_module, {
-    [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
-    [ads_wrapper.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712",
-    [ads_wrapper.T_BANNER] = {
-        id = "ca-app-pub-3940256099942544/6300978111",
-        size = admob.SIZE_MEDIUM_RECTANGLE,
-        position = admob.POS_BOTTOM_LEFT
-    }
-})
-ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
-ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 2)
-ads_wrapper.init(true, true, function(response)
-    pprint(response)
-end)
-```
-
-## Test Networks
-
-You can disable comments: 
-
-```lua
-test.is_debug = false
-```
-
-Example:
-
-```lua
-local test = require("ads_wrapper.ads_networks.test")
-local test_1_id = ads_wrapper.register_network(test.network1, {param = "test_param 1"})
-local test_2_id = ads_wrapper.register_network(test.network2, {param = "test_param 2"})
-ads_wrapper.setup_video({{id = test_1_id, count = 1}, {id = test_2_id, count = 2}, {id = test_1_id, ount = 2}}, 4)
-ads_wrapper.setup_banner({{id = test_1_id, count = 1}})
-ads_wrapper.init(true, true, function(response)
-    pprint(response)
-end)
-```
-
 ## Applovin Max
 
 > &#x26a0;&#xfe0f; The current version only supports Android
@@ -234,4 +203,35 @@ You need to set:
 
         ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
         ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
+```
+
+## Admob and Unity Ads
+
+Example for two networks:
+
+```lua
+-- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
+local unity = require("ads_wrapper.ads_networks.unity")
+local unity_net_id = ads_wrapper.register_network(unity, {
+    ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
+    [ads_wrapper.T_REWARDED] = "rewardedVideo",
+    [ads_wrapper.T_INTERSTITIAL] = "video",
+    [ads_wrapper.T_BANNER] = {id = "banner", size = {width = 720, height = 90}, position = unityads.BANNER_POSITION_BOTTOM_RIGHT}
+})
+-- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
+local admob_module = require("ads_wrapper.ads_networks.admob")
+local admob_net_id = ads_wrapper.register_network(admob_module, {
+    [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
+    [ads_wrapper.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712",
+    [ads_wrapper.T_BANNER] = {
+        id = "ca-app-pub-3940256099942544/6300978111",
+        size = admob.SIZE_MEDIUM_RECTANGLE,
+        position = admob.POS_BOTTOM_LEFT
+    }
+})
+ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
+ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 2)
+ads_wrapper.init(true, true, function(response)
+    pprint(response)
+end)
 ```
