@@ -359,7 +359,7 @@ end
 ---Returns the current network pointed to by mediator
 ---Default returns for the video mediator
 ---@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
----@return table
+---@return table|nil
 function M.get_current_network(check_banner)
     local used_mediator = check_banner and banner_mediator or video_mediator
     if not used_mediator then
@@ -372,7 +372,7 @@ end
 ---Returns the next network pointed to by mediator
 ---Default returns for the video mediator
 ---@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
----@return table
+---@return table|nil
 function M.get_next_network(check_banner)
     local used_mediator = check_banner and banner_mediator or video_mediator
     if not used_mediator then

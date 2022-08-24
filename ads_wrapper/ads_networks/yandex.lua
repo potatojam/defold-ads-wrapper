@@ -265,7 +265,7 @@ function M.is_supported()
 end
 
 ---Returns Yandex.Games interface language in ISO 639-1 format.
----@return string
+---@return string|nil
 function M.get_lang()
     if not M.is_initialized() then
         return nil
@@ -378,27 +378,29 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@return hash
-function M.show_banner()
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = true
         yagames.banner_set(banner_id, "display", "flex")
         yagames.banner_refresh(banner_id, function(self, err, data)
         end)
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("YANDEX: Banner not loaded"))
     end
-    return helper.error("YANDEX: Banner not loaded")
 end
 
 ---Hides loaded banner.
----@return hash
-function M.hide_banner()
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
         yagames.banner_set(banner_id, "display", "none")
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("YANDEX: Banner not loaded"))
     end
-    return helper.error("YANDEX: Banner not loaded")
 end
 
 ---Sets banner position.
@@ -420,7 +422,7 @@ end
 
 ---Sets banner size.
 ---@param size table table `{width = string, height = string}`
----@return userdata
+---@return table
 function M.set_banner_size(size)
     if not size then
         return helper.error("YANDEX: Size must be given")

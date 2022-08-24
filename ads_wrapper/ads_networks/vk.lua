@@ -228,7 +228,7 @@ end
 ---Check if the banner is set up
 ---@return boolean
 function M.is_banner_setup()
-    return banner_configs
+    return banner_configs ~= nil
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
@@ -276,34 +276,42 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@return hash
-function M.show_banner()
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
     if not vkbridge.is_webview() then
-        return helper.error("Only works for webview")
+        callback_delay(callback, helper.error("VK: Only works for webview"))
+        return
     end
     if M.is_banner_loaded() then
         banner_showed = true
         is_fresh_banner = false
         local result = vkbridge.show_wv_banner()
-        return result and helper.success() or helper.error("VK: Undefined error")
+        if result then
+            callback_delay(callback, helper.success())
+        else
+            callback_delay(callback, helper.error("VK: Undefined error"))
+        end
+    else
+        callback_delay(callback, helper.error("VK: Banner not loaded"))
     end
-    return helper.error("VK: Banner not loaded")
 end
 
 ---Hides loaded banner.
----@return hash
-function M.hide_banner()
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
     if not vkbridge.is_webview() then
-        return helper.error("Only works for webview")
+        callback_delay(callback, helper.error("VK: Only works for webview"))
+        return
     end
     if M.is_banner_loaded() then
         banner_showed = false
         ---For refresh banner
         banner_loaded = false
         vkbridge.hide_wv_banner()
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("VK: Banner not loaded"))
     end
-    return helper.error("VK: Banner not loaded")
 end
 
 ---Sets banner count.

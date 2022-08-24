@@ -29,6 +29,31 @@ local function serializeTable(val, name, skipnewlines, depth)
     return tmp
 end
 
+local function set_button_state(button, value)
+    button:set_enabled(value)
+    gui.set_enabled(button.node, value)
+end
+
+local function set_buttons(self, state)
+    gui.set_enabled(self.txt_init, state)
+    gui.set_enabled(self.txt_advertising, not state)
+    gui.set_enabled(self.txt_banners, not state)
+    for index, button in ipairs(self.ads) do
+        set_button_state(button, not state)
+    end
+    for index, button in ipairs(self.services) do
+        set_button_state(button, state)
+    end
+end
+
+local function show_services_buttons(self)
+    set_buttons(self, true)
+end
+
+local function show_ads_buttons(self)
+    set_buttons(self, false)
+end
+
 local function update_log(self)
     local metrix = gui.get_text_metrics_from_node(self.log_text)
     self.log_size.y = metrix.height * 0.5 + 10
@@ -155,13 +180,14 @@ local function init_test(self)
     ads_wrapper.init(true, true, function(response)
         print_log(self, "init_test", response)
     end)
+    show_ads_buttons(self)
 end
 
 local function init_mobiles(self)
     if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.1.2.zip
+        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
             ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
@@ -185,6 +211,7 @@ local function init_mobiles(self)
         ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
         ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 6)
         print_log(self, "init_mobiles", "Admob and Unity Ads set up")
+        show_ads_buttons(self)
     else
         print_log(self, "init_mobiles", "Mobiles not support on this platform")
     end
@@ -200,6 +227,7 @@ local function init_poki(self)
         ads_wrapper.setup_video({{id = poki_net_id}})
         print_log(self, "init_poki", "Poki set up")
         -- Poki has no banners
+        show_ads_buttons(self)
     else
         print_log(self, "init_poki", "Poki not support on this platform")
     end
@@ -221,6 +249,7 @@ local function init_yandex(self)
         -- ads_wrapper.setup_video({{id = yandex_net_id, count = 1}}, 1)
         -- ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
         -- print_log(self, "init_yandex", "Yandex set up")
+        show_ads_buttons(self)
     else
         print_log(self, "init_yandex", "Yandex not support on this platform")
     end
@@ -241,8 +270,70 @@ local function init_vk(self)
         -- ads_wrapper.setup_video({{id = vk_net_id, count = 1}}, 1)
         -- ads_wrapper.setup_banner({{id = vk_net_id, count = 1}}, 1)
         -- print_log(self, "init_vk", "Vk set up")
+        show_ads_buttons(self)
     else
         print_log(self, "init_vk", "Vk not support on this platform")
+    end
+end
+
+local function init_applovin_max(self)
+    if platform.is_same(platform.PL_ANDROID) then
+        ads_wrapper.clear_networks()
+
+        -- Need to add the extension: https://github.com/alexeyfeskov/defold-maxsdk/archive/refs/tags/11.4.4.zip
+        local applovin_max = require("ads_wrapper.ads_networks.applovin_max")
+        local applovin_max_net_id = ads_wrapper.register_network(applovin_max, {
+            [ads_wrapper.T_REWARDED] = "YOUR_RE_AD_UNIT",
+            [ads_wrapper.T_INTERSTITIAL] = "YOUR_IN_AD_UNIT",
+            [ads_wrapper.T_BANNER] = {
+                id = "YOUR_BA_AD_UNIT",
+                mrec_id = "YOUR_MREC_AD_UNIT",
+                size = applovin_max.POS_BOTTOM_CENTER,
+                position = applovin_max.SIZE_BANNER
+            },
+            LDU = {
+                name = "LDU",
+                country = 1,
+                state = 0
+            },
+            has_user_consent = true,
+            is_age_restricted_user = false,
+            do_not_sell = false,
+            muted = false,
+            verbose_logging = true
+        })
+
+        ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
+        ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
+        print_log(self, "init_applovin_max", "Applovin Max Ads set up")
+        show_ads_buttons(self)
+        set_button_state(self.btn_mediation_applovin, true)
+    else
+        print_log(self, "init_applovin_max", "Applovin Max not support on this platform")
+    end
+end
+
+---Create a button and add it to the services table
+---@param self userdata
+---@param name string node functions
+---@param callback function
+local function create_service_button(self, name, callback)
+    local button = self.druid:new_button(name, callback)
+    table.insert(self.services, button)
+end
+
+---Create a button and add it to the ads table
+---@param self userdata
+---@param name string node functions
+---@param callback function
+local function create_ads_button(self, name, callback)
+    local button = self.druid:new_button(name, callback)
+    table.insert(self.ads, button)
+end
+
+local function on_mediation_applovin(self)
+    if ads_wrapper.is_initialized() and maxsdk then
+        maxsdk.open_mediation_debugger()
     end
 end
 
@@ -256,28 +347,39 @@ function init(self)
     self.log_size = vmath.vector3(550, 350, 0)
     update_log(self)
     self.log_scroll:set_extra_stretch_size(0)
+    self.ads = {}
+    self.services = {}
 
-    self.druid:new_button("btn_load_interstitial", on_load_interstitial)
-    self.druid:new_button("btn_show_interstitial", on_show_interstitial)
-    self.druid:new_button("btn_load_rewarded", on_load_rewarded)
-    self.druid:new_button("btn_show_rewarded", on_show_rewarded)
-    self.druid:new_button("btn_show_banner", on_show_banner)
-    self.druid:new_button("btn_hide_banner", on_hide_banner)
-    self.druid:new_button("btn_load_banner", on_load_banner)
-    self.druid:new_button("btn_unload_banner", on_unload_banner)
-    self.druid:new_button("btn_init_video", on_init_video)
-    self.druid:new_button("btn_init_banner", on_init_banner)
-    self.druid:new_button("btn_init_test", init_test)
-    self.druid:new_button("btn_init_mobiles", init_mobiles)
-    self.druid:new_button("btn_init_poki", init_poki)
-    self.druid:new_button("btn_init_yandex", init_yandex)
-    self.druid:new_button("btn_init_vk", init_vk)
-    self.druid:new_button("btn_is_rewarded_loaded", is_rewarded_loaded)
-    self.druid:new_button("btn_is_interstitial_loaded", is_interstitial_loaded)
-    self.druid:new_button("btn_is_banner_loaded", is_banner_loaded)
+    self.txt_init = gui.get_node("txt_init")
+    self.txt_advertising = gui.get_node("txt_advertising")
+    self.txt_banners = gui.get_node("txt_banners")
+
+    create_service_button(self, "btn_init_test", init_test)
+    create_service_button(self, "btn_init_mobiles", init_mobiles)
+    create_service_button(self, "btn_init_poki", init_poki)
+    create_service_button(self, "btn_init_yandex", init_yandex)
+    create_service_button(self, "btn_init_vk", init_vk)
+    create_service_button(self, "btn_init_applovin", init_applovin_max)
+
+    create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
+    create_ads_button(self, "btn_show_interstitial", on_show_interstitial)
+    create_ads_button(self, "btn_load_rewarded", on_load_rewarded)
+    create_ads_button(self, "btn_show_rewarded", on_show_rewarded)
+    create_ads_button(self, "btn_show_banner", on_show_banner)
+    create_ads_button(self, "btn_hide_banner", on_hide_banner)
+    create_ads_button(self, "btn_load_banner", on_load_banner)
+    create_ads_button(self, "btn_unload_banner", on_unload_banner)
+    create_ads_button(self, "btn_init_video", on_init_video)
+    create_ads_button(self, "btn_init_banner", on_init_banner)
+    create_ads_button(self, "btn_is_rewarded_loaded", is_rewarded_loaded)
+    create_ads_button(self, "btn_is_interstitial_loaded", is_interstitial_loaded)
+    create_ads_button(self, "btn_is_banner_loaded", is_banner_loaded)
+    self.btn_mediation_applovin = self.druid:new_button("btn_mediation_applovin", on_mediation_applovin)
+    set_button_state(self.btn_mediation_applovin, false)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     init_test(self)
+    show_services_buttons(self)
 end
 
 function update(self, dt)

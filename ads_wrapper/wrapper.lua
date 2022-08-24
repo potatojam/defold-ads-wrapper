@@ -144,13 +144,24 @@ end
 
 ---Hides banner
 ---@param network network banner network
-function M.hide_network_banner(network)
-    local result = helper.success("Banner already hided")
+---@param callback function callback accepting the response result
+function M.hide_network_banner(network, callback)
     if network and network.is_banner_showed() then
-        result = network.hide_banner()
+        network.hide_banner(callback)
+        ---TODO QUESTION: need to clean the network in case of failure
         M.clear_banner_network()
+    else
+        handle(callback, helper.success("Banner already hided"))
     end
-    return result
+end
+
+function M.show_network_banner(network, callback)
+    network.show_banner(function(response)
+        if response.result == events.SUCCESS then
+            banner_network = network
+        end
+        handle(callback, response)
+    end)
 end
 
 ---Shows banner
@@ -158,21 +169,20 @@ end
 ---@param callback function callback accepting the response result
 function M.show_banner(network, callback)
     if banner_network then
-        M.hide_network_banner(banner_network)
+        M.hide_network_banner(banner_network, function(response)
+            --TODO ERROR
+            M.show_network_banner(network, callback)
+        end)
+    else
+        M.show_network_banner(network, callback)
     end
-    local response = network.show_banner()
-    if response.result == events.SUCCESS then
-        banner_network = network
-    end
-    handle(callback, response)
 end
 
 ---Hides banner
 ---@param network network current network
 ---@param callback function callback accepting the response result
 function M.hide_banner(network, callback)
-    local response = M.hide_network_banner(banner_network)
-    handle(callback, response)
+    M.hide_network_banner(banner_network, callback)
 end
 
 ---Returns banners network

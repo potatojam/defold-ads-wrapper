@@ -291,25 +291,27 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@return table
-function M.show_banner()
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = true
         unityads.show_banner()
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("UNITYADS: Banner not loaded"))
     end
-    return helper.error("UNITYADS: Banner not loaded")
 end
 
 ---Hides loaded banner.
----@return table
-function M.hide_banner()
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
         unityads.hide_banner()
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("UNITYADS: Banner not loaded"))
     end
-    return helper.error("UNITYADS: Banner not loaded")
 end
 
 ---Sets banner position.
