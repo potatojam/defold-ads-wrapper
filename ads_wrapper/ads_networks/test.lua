@@ -117,16 +117,20 @@ M.network1 = {
         return M.network1._is_banner_loaded
     end,
 
-    show_banner = function()
+    show_banner = function(callback)
         dprint(M.network1.NAME, "ads.show_banner()")
         M.network1._is_banner_showed = true
-        return helper.success()
+        timer.delay(0, false, function()
+            callback(helper.success())
+        end)
     end,
 
-    hide_banner = function()
+    hide_banner = function(callback)
         dprint(M.network1.NAME, "ads.hide_banner()")
         M.network1._is_banner_showed = false
-        return helper.success()
+        timer.delay(0, false, function()
+            callback(helper.success())
+        end)
     end,
 
     set_banner_position = function(position)
@@ -245,16 +249,20 @@ M.network2 = {
         return M.network2._is_banner_loaded
     end,
 
-    show_banner = function()
+    show_banner = function(callback)
         dprint(M.network2.NAME, "ads.show_banner()")
         M.network2._is_banner_showed = true
-        return helper.success()
+        timer.delay(0, false, function()
+            callback(helper.success())
+        end)
     end,
 
-    hide_banner = function()
+    hide_banner = function(callback)
         dprint(M.network2.NAME, "ads.hide_banner()")
         M.network2._is_banner_showed = false
-        return helper.success()
+        timer.delay(0, false, function()
+            callback(helper.success())
+        end)
     end,
 
     set_banner_position = function(position)

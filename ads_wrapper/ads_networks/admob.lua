@@ -276,25 +276,27 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@return hash
-function M.show_banner()
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
     if M.is_banner_loaded() then
         admob.show_banner(banner_configs.position)
         banner_showed = true
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("ADMOB: Banner not loaded"))
     end
-    return helper.error("ADMOB: Banner not loaded")
 end
 
 ---Hides loaded banner.
----@return hash
-function M.hide_banner()
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
     if M.is_banner_loaded() then
         admob.hide_banner()
         banner_showed = false
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("ADMOB: Banner not loaded"))
     end
-    return helper.error("ADMOB: Banner not loaded")
 end
 
 ---Sets banner position. It is imperative to hide and show the banner again after this function.

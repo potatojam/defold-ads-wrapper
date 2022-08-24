@@ -166,15 +166,17 @@ function M.is_banner_loaded()
 end
 
 ---Not supported.
----@return hash
-function M.show_banner()
-    return helper.error("Banner not supported")
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
+    module_callback = callback
+    callback_once_delay(helper.error("Banner not supported"))
 end
 
 ---Not supported.
----@return hash
-function M.hide_banner()
-    return helper.error("Banner not supported")
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
+    module_callback = callback
+    callback_once_delay(helper.error("Banner not supported"))
 end
 
 ---Not supported.

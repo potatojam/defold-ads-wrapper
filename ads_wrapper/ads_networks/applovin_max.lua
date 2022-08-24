@@ -49,7 +49,6 @@ local function callback_delay(callback, response)
 end
 
 local function maxsdk_callback(self, message_id, message)
-    pprint(message_id, message)
     if message_id == maxsdk.MSG_INITIALIZATION then
         ---TODO: check error
         is_applovin_initialized = true
@@ -58,12 +57,12 @@ local function maxsdk_callback(self, message_id, message)
         if message.event == maxsdk.EVENT_CLOSED then
             callback_once(helper.success())
         elseif message.event == maxsdk.EVENT_CLICKED then
-            print("EVENT_CLICKED: Interstitial AD clicked")
+            -- print("EVENT_CLICKED: Interstitial AD clicked")
         elseif message.event == maxsdk.EVENT_FAILED_TO_SHOW then
             callback_once(helper.error("APPLOVIN MAX: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) ..
                                            "\nError: " .. tostring(message.error)))
         elseif message.event == maxsdk.EVENT_OPENING then
-            print("EVENT_OPENING: Interstitial AD is opening")
+            -- print("EVENT_OPENING: Interstitial AD is opening")
         elseif message.event == maxsdk.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error("APPLOVIN MAX: EVENT_FAILED_TO_LOAD: Interstitial AD failed to load\nCode: " .. tostring(message.code) ..
                                            "\nError: " .. tostring(message.error)))
@@ -73,7 +72,7 @@ local function maxsdk_callback(self, message_id, message)
             callback_once(helper.error("APPLOVIN MAX: EVENT_NOT_LOADED: can't call show_interstitial() before EVENT_LOADED\nCode: " ..
                                            tostring(message.code) .. "\nError: " .. tostring(message.error)))
         elseif message.event == maxsdk.EVENT_REVENUE_PAID then
-            print("EVENT_REVENUE_PAID: Interstitial AD revenue: ", message.revenue, message.network)
+            -- print("EVENT_REVENUE_PAID: Interstitial AD revenue: ", message.revenue, message.network)
         end
     elseif message_id == maxsdk.MSG_REWARDED then
         if message.event == maxsdk.EVENT_CLOSED then
@@ -89,7 +88,7 @@ local function maxsdk_callback(self, message_id, message)
             callback_once(helper.error("APPLOVIN MAX: EVENT_FAILED_TO_SHOW: Rewarded AD failed to show\nCode: " .. tostring(message.code) ..
                                            "\nError: " .. tostring(message.error)))
         elseif message.event == maxsdk.EVENT_OPENING then
-            print("EVENT_OPENING: Rewarded AD is opening")
+            -- print("EVENT_OPENING: Rewarded AD is opening")
         elseif message.event == maxsdk.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error("APPLOVIN MAX: EVENT_FAILED_TO_LOAD: Rewarded AD failed to load\nCode: " .. tostring(message.code) ..
                                            "\nError: " .. tostring(message.error)))
@@ -103,34 +102,35 @@ local function maxsdk_callback(self, message_id, message)
             reward.amount = message.amount
             reward.type = message.type
         elseif message.event == maxsdk.EVENT_REVENUE_PAID then
-            print("EVENT_REVENUE_PAID: Rewarded AD revenue: ", message.revenue, message.network)
+            -- print("EVENT_REVENUE_PAID: Rewarded AD revenue: ", message.revenue, message.network)
         end
     elseif message_id == maxsdk.MSG_BANNER then
         if message.event == maxsdk.EVENT_LOADED then
             callback_once(helper.success(nil, {network = message.network}))
         elseif message.event == maxsdk.EVENT_OPENING then
-            print("EVENT_OPENING: Banner AD is opening")
+            ---Works very bad
         elseif message.event == maxsdk.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error(
                               "APPLOVIN MAX: EVENT_FAILED_TO_LOAD: Banner AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
                                   tostring(message.error)))
         elseif message.event == maxsdk.EVENT_FAILED_TO_SHOW then
-            -- TODO: field to show
-            print("EVENT_FAILED_TO_SHOW: Banner AD failed to show", message.code, message.error)
+            callback_once(helper.error(
+                              "APPLOVIN MAX: EVENT_FAILED_TO_LOAD: Banner AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                                  tostring(message.error)))
         elseif message.event == maxsdk.EVENT_EXPANDED then
-            print("EVENT_EXPANDED: Banner AD expanded")
+            -- print("EVENT_EXPANDED: Banner AD expanded")
         elseif message.event == maxsdk.EVENT_COLLAPSED then
-            print("EVENT_COLLAPSED: Banner AD coppalsed")
+            -- print("EVENT_COLLAPSED: Banner AD coppalsed")
         elseif message.event == maxsdk.EVENT_CLICKED then
-            print("EVENT_CLICKED: Banner AD clicked")
+            -- print("EVENT_CLICKED: Banner AD clicked")
         elseif message.event == maxsdk.EVENT_CLOSED then
-            print("EVENT_CLOSED: Banner AD closed")
+            -- print("EVENT_CLOSED: Banner AD closed")
         elseif message.event == maxsdk.EVENT_DESTROYED then
             callback_once(helper.success())
         elseif message.event == maxsdk.EVENT_NOT_LOADED then
             callback_once(helper.error("APPLOVIN MAX: EVENT_JSON_ERROR: can't call show_banner() before EVENT_LOADED: " .. tostring(message.error)))
         elseif message.event == maxsdk.EVENT_REVENUE_PAID then
-            print("EVENT_REVENUE_PAID: Banner AD revenue: ", message.revenue, message.network)
+            -- print("EVENT_REVENUE_PAID: Banner AD revenue: ", message.revenue, message.network)
         end
     end
 end
@@ -275,25 +275,34 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@return hash
-function M.show_banner()
+---@param callback function the function is called after execution.
+function M.show_banner(callback)
     if M.is_banner_loaded() then
+        module_callback = callback
+        maxsdk.set_callback(maxsdk_callback)
         maxsdk.show_banner(maxsdk[banner_configs.position])
         banner_showed = true
-        return helper.success()
+        ---Wait until some error happens
+        timer.delay(0.1, false, function ()
+            if module_callback then
+                callback_once(helper.success())
+            end
+        end)
+    else
+        callback_delay(callback, helper.error("APPLOVIN MAX: Banner not loaded"))
     end
-    return helper.error("APPLOVIN MAX: Banner not loaded")
 end
 
 ---Hides loaded banner.
----@return hash
-function M.hide_banner()
+---@param callback function the function is called after execution.
+function M.hide_banner(callback)
     if M.is_banner_loaded() then
         maxsdk.hide_banner()
         banner_showed = false
-        return helper.success()
+        callback_delay(callback, helper.success())
+    else
+        callback_delay(callback, helper.error("APPLOVIN MAX: Banner not loaded"))
     end
-    return helper.error("APPLOVIN MAX: Banner not loaded")
 end
 
 ---Sets banner position. It is imperative to hide and show the banner again after this function.

@@ -302,7 +302,6 @@ local function init_applovin_max(self)
             muted = false,
             verbose_logging = true
         })
-        ---TODO: Set default keys
 
         ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
         ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
