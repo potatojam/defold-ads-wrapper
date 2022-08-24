@@ -1,3 +1,5 @@
+![](docs/ads_wrapper.png)
+
 # Ads Wrapper for Defold
 
 Ads Wrapper allows:
