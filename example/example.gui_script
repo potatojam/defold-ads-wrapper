@@ -187,7 +187,7 @@ local function init_mobiles(self)
     if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.1.2.zip
+        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
             ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
