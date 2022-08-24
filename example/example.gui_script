@@ -29,17 +29,20 @@ local function serializeTable(val, name, skipnewlines, depth)
     return tmp
 end
 
+local function set_button_state(button, value)
+    button:set_enabled(value)
+    gui.set_enabled(button.node, value)
+end
+
 local function set_buttons(self, state)
     gui.set_enabled(self.txt_init, state)
     gui.set_enabled(self.txt_advertising, not state)
     gui.set_enabled(self.txt_banners, not state)
     for index, button in ipairs(self.ads) do
-        button:set_enabled(not state)
-        gui.set_enabled(button.node, not state)
+        set_button_state(button, not state)
     end
     for index, button in ipairs(self.services) do
-        button:set_enabled(state)
-        gui.set_enabled(button.node, state)
+        set_button_state(button, state)
     end
 end
 
@@ -273,21 +276,41 @@ local function init_vk(self)
     end
 end
 
-local function init_applovin(self)
+local function init_applovin_max(self)
     if platform.is_same(platform.PL_ANDROID) then
         ads_wrapper.clear_networks()
 
         -- Need to add the extension: https://github.com/alexeyfeskov/defold-maxsdk/archive/refs/tags/11.4.4.zip
-        local applovin = require("ads_wrapper.ads_networks.applovin")
-        local applovin_net_id = ads_wrapper.register_network(applovin)
-        ---TODO: add some params
+        local applovin_max = require("ads_wrapper.ads_networks.applovin_max")
+        local applovin_max_net_id = ads_wrapper.register_network(applovin_max, {
+            [ads_wrapper.T_REWARDED] = "YOUR_RE_AD_UNIT",
+            [ads_wrapper.T_INTERSTITIAL] = "YOUR_IN_AD_UNIT",
+            [ads_wrapper.T_BANNER] = {
+                id = "YOUR_BA_AD_UNIT",
+                mrec_id = "YOUR_MREC_AD_UNIT",
+                size = applovin_max.POS_BOTTOM_CENTER,
+                position = applovin_max.SIZE_BANNER
+            },
+            LDU = {
+                name = "LDU",
+                country = 1,
+                state = 0
+            },
+            has_user_consent = true,
+            is_age_restricted_user = false,
+            do_not_sell = false,
+            muted = false,
+            verbose_logging = true
+        })
+        ---TODO: Set default keys
 
-        ads_wrapper.setup_video({{id = applovin_net_id, count = 1}}, 1)
-        ads_wrapper.setup_banner({{id = applovin_net_id, count = 1}}, 1)
-        print_log(self, "init_applovin", "Applovin Ads set up")
+        ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
+        ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
+        print_log(self, "init_applovin_max", "Applovin Max Ads set up")
         show_ads_buttons(self)
+        set_button_state(self.btn_mediation_applovin, true)
     else
-        print_log(self, "init_applovin", "Applovin not support on this platform")
+        print_log(self, "init_applovin_max", "Applovin Max not support on this platform")
     end
 end
 
@@ -307,6 +330,12 @@ end
 local function create_ads_button(self, name, callback)
     local button = self.druid:new_button(name, callback)
     table.insert(self.ads, button)
+end
+
+local function on_mediation_applovin(self)
+    if ads_wrapper.is_initialized() and maxsdk then
+        maxsdk.open_mediation_debugger()
+    end
 end
 
 function init(self)
@@ -331,7 +360,7 @@ function init(self)
     create_service_button(self, "btn_init_poki", init_poki)
     create_service_button(self, "btn_init_yandex", init_yandex)
     create_service_button(self, "btn_init_vk", init_vk)
-    create_service_button(self, "btn_init_applovin", init_applovin)
+    create_service_button(self, "btn_init_applovin", init_applovin_max)
 
     create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
     create_ads_button(self, "btn_show_interstitial", on_show_interstitial)
@@ -346,6 +375,8 @@ function init(self)
     create_ads_button(self, "btn_is_rewarded_loaded", is_rewarded_loaded)
     create_ads_button(self, "btn_is_interstitial_loaded", is_interstitial_loaded)
     create_ads_button(self, "btn_is_banner_loaded", is_banner_loaded)
+    self.btn_mediation_applovin = self.druid:new_button("btn_mediation_applovin", on_mediation_applovin)
+    set_button_state(self.btn_mediation_applovin, false)
 
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     init_test(self)
