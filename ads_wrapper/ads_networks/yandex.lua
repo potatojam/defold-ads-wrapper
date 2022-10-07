@@ -1,4 +1,4 @@
-local M = {NAME = "yandex"}
+local M = { NAME = "yandex" }
 -- Extention: https://github.com/indiesoftby/defold-yagames
 
 local ads = require("ads_wrapper.ads_wrapper")
@@ -21,7 +21,7 @@ local banner_id = nil
 local banner_showed = false
 local banner_settings = nil
 local is_opened = false
-local banner_configs = {size = {width = "100vw", height = "56vh"}, position = {x = "0px", y = "0px"}}
+local banner_configs = { size = { width = "100vw", height = "56vh" }, position = { x = "0px", y = "0px" } }
 
 -- Call saved `module_callback` only once. Send result.
 ---@param result any
@@ -100,7 +100,7 @@ local function storage_init_handler(self, err)
         print("YANDEX: Safe storage is received.")
         is_storage_active = true
     end
-    yagames.player_init({scopes = false}, player_init_handler)
+    yagames.player_init({ scopes = false }, player_init_handler)
 end
 
 -- Called when an api is initialized.
@@ -170,7 +170,8 @@ end
 ---Called when banner is created.
 ---@param self userdata script data
 ---@param err string|nil error message. `nil` if everything is ok.
----@param data any The function obtains the data.product parameter with one of two values: direct - Yandex.Direct ads were shown in an RTB ad block, rtb - A media ad was shown in an RTB ad block.
+---@param data any The function obtains the data.product parameter with one of two values: direct - Yandex.Direct ads were shown in an RTB ad block,
+---rtb - A media ad was shown in an RTB ad block.
 local function banner_create_handler(self, err, data)
     is_load_started = false
     if not err then
@@ -186,9 +187,10 @@ end
 ---Creates css. Use `banner_configs`.
 ---@return string
 local function create_css_style()
-    return
-        "width: " .. banner_configs.size.width .. ";height: " .. banner_configs.size.height .. ";top: " .. banner_configs.position.y .. ";left: " ..
-            banner_configs.position.x .. ";" .. (banner_settings.css_styles or "align-items: center;justify-content: center;overflow: hidden;display: flex;")
+    return "width: " ..
+        banner_configs.size.width .. ";height: " .. banner_configs.size.height .. ";top: " .. banner_configs.position.y .. ";left: " ..
+        banner_configs.position.x ..
+        ";" .. (banner_settings.css_styles or "align-items: center;justify-content: center;overflow: hidden;display: flex;")
 end
 
 ---Creates a banner according to the specified parameters
@@ -233,7 +235,7 @@ end
 function M.get_player(callback)
     if not is_player_initialized then
         module_callback = callback
-        yagames.player_init({scopes = false}, get_player_init_handler)
+        yagames.player_init({ scopes = false }, get_player_init_handler)
     else
         callback_delay(callback, helper.success())
     end
@@ -288,7 +290,7 @@ end
 function M.show_rewarded(callback)
     is_reward_get = false
     module_callback = callback
-    yagames.adv_show_rewarded_video({open = rewarded_open, rewarded = rewarded_rewarded, close = rewarded_close, error = adv_error})
+    yagames.adv_show_rewarded_video({ open = rewarded_open, rewarded = rewarded_rewarded, close = rewarded_close, error = adv_error })
 end
 
 -- Not used.
@@ -308,7 +310,7 @@ end
 ---@param callback function the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
-    yagames.adv_show_fullscreen_adv({open = adv_open, close = adv_close, offline = adv_offline, error = adv_error})
+    yagames.adv_show_fullscreen_adv({ open = adv_open, close = adv_close, offline = adv_offline, error = adv_error })
 end
 
 -- Not used.

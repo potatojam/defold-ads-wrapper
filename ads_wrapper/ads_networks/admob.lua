@@ -1,4 +1,4 @@
-local M = {NAME = "admob"}
+local M = { NAME = "admob" }
 -- Extention: https://github.com/defold/extension-admob
 
 local ads = require("ads_wrapper.ads_wrapper")
@@ -12,7 +12,7 @@ local is_admob_initialized = false
 local is_reward_get = false
 local banner_configs
 if admob then
-    banner_configs = {size = admob.SIZE_ADAPTIVE_BANNER, position = admob.POS_TOP_CENTER}
+    banner_configs = { size = admob.SIZE_ADAPTIVE_BANNER, position = admob.POS_TOP_CENTER }
 end
 
 ---Call saved `module_callback` only once.
@@ -67,21 +67,21 @@ local function admob_callback(self, message_id, message)
             callback_once(helper.success())
         elseif message.event == admob.EVENT_FAILED_TO_SHOW then
             callback_once(helper.error(
-                              "ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                  tostring(message.error)))
+                "ADMOB: EVENT_FAILED_TO_SHOW: Interstitial AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
+                tostring(message.error)))
         elseif message.event == admob.EVENT_OPENING then
             -- on android this event fire only when ADS activity closed =(
             -- print("EVENT_OPENING: Interstitial AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error(
-                              "ADMOB: EVENT_FAILED_TO_LOAD: Interstitial AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                  tostring(message.error)))
+                "ADMOB: EVENT_FAILED_TO_LOAD: Interstitial AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
+                tostring(message.error)))
         elseif message.event == admob.EVENT_LOADED then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_NOT_LOADED then
             callback_once(helper.error(
-                              "ADMOB: EVENT_NOT_LOADED: can't call show_interstitial() before EVENT_LOADED\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                  tostring(message.error)))
+                "ADMOB: EVENT_NOT_LOADED: can't call show_interstitial() before EVENT_LOADED\nCode: " .. tostring(message.code) .. "\nError: " ..
+                tostring(message.error)))
         elseif message.event == admob.EVENT_IMPRESSION_RECORDED then
             -- print("EVENT_IMPRESSION_RECORDED: Interstitial did record impression")
         elseif message.event == admob.EVENT_JSON_ERROR then
@@ -97,13 +97,13 @@ local function admob_callback(self, message_id, message)
             is_reward_get = false
         elseif message.event == admob.EVENT_FAILED_TO_SHOW then
             callback_once(helper.error("ADMOB: EVENT_FAILED_TO_SHOW: Rewarded AD failed to show\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                           tostring(message.error)))
+                tostring(message.error)))
         elseif message.event == admob.EVENT_OPENING then
             -- on android this event fire only when ADS activity closed =(
             -- print("EVENT_OPENING: Rewarded AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Rewarded AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                           tostring(message.error)))
+                tostring(message.error)))
         elseif message.event == admob.EVENT_LOADED then
             callback_once(helper.success())
         elseif message.event == admob.EVENT_NOT_LOADED then
@@ -118,12 +118,12 @@ local function admob_callback(self, message_id, message)
     elseif message_id == admob.MSG_BANNER then
         if message.event == admob.EVENT_LOADED then
             callback_once(helper.success("ADMOB: EVENT_LOADED: Banner AD loaded. Height: " .. tostring(message.height) .. "px Width: " ..
-                                             tostring(message.width) .. "px"))
+                tostring(message.width) .. "px"))
         elseif message.event == admob.EVENT_OPENING then
             -- print("ADMOB: EVENT_OPENING: Banner AD is opening")
         elseif message.event == admob.EVENT_FAILED_TO_LOAD then
             callback_once(helper.error("ADMOB: EVENT_FAILED_TO_LOAD: Banner AD failed to load\nCode: " .. tostring(message.code) .. "\nError: " ..
-                                           tostring(message.error)))
+                tostring(message.error)))
         elseif message.event == admob.EVENT_CLICKED then
             -- print("ADMOB: EVENT_CLICKED: Banner AD loaded")
         elseif message.event == admob.EVENT_CLOSED then
@@ -160,12 +160,12 @@ function M.init(callback)
     if ads.is_debug then
         if platform.is_same(platform.PL_IOS) then
             -- https://developers.google.com/admob/ios/test-ads
-            parameters[ads.T_BANNER] = {id = "ca-app-pub-3940256099942544/2934735716"} -- test unit for banners
+            parameters[ads.T_BANNER] = { id = "ca-app-pub-3940256099942544/2934735716" } -- test unit for banners
             parameters[ads.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/4411468910" -- test unit for interstitial
             parameters[ads.T_REWARDED] = "ca-app-pub-3940256099942544/1712485313" -- test unit for rewarded
         elseif platform.is_same(platform.PL_ANDROID) then
             -- From https://developers.google.com/admob/android/test-ads
-            parameters[ads.T_BANNER] = {id = "ca-app-pub-3940256099942544/6300978111"} -- test unit for banners
+            parameters[ads.T_BANNER] = { id = "ca-app-pub-3940256099942544/6300978111" } -- test unit for banners
             parameters[ads.T_INTERSTITIAL] = "ca-app-pub-3940256099942544/1033173712" -- test unit for interstitial
             parameters[ads.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917" -- test unit for rewarded
         end

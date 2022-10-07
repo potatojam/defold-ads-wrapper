@@ -1,4 +1,4 @@
-local M = {NAME = "vk"}
+local M = { NAME = "vk" }
 -- Extention: https://github.com/potatojam/defold-vkbridge
 
 local ads = require("ads_wrapper.ads_wrapper")
@@ -15,7 +15,7 @@ local is_load_started = false
 local is_fresh_banner = false
 local banner_loaded = false
 local banner_showed = false
-local banner_configs = {count = 1, position = "top"}
+local banner_configs = { count = 1, position = "top" }
 
 -- Call saved `module_callback` only once. Send result.
 ---@param result any

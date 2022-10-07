@@ -1,4 +1,4 @@
-local M = {NAME = "poki"}
+local M = { NAME = "poki" }
 -- Extention: https://github.com/AGulev/defold-poki-sdk
 
 local ads = require("ads_wrapper.ads_wrapper")

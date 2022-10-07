@@ -6,7 +6,7 @@ M.PL_IOS = hash("PL_IOS")
 M.PL_HTML5 = hash("PL_HTML5")
 M.PL_OTHER = hash("PL_OTHER")
 
-local platform = 0
+local platform = nil
 
 local text_platform = sys.get_sys_info().system_name
 if text_platform == "Android" then
