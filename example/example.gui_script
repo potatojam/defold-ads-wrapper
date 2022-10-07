@@ -153,30 +153,30 @@ local function is_rewarded_loaded(self)
     local value = ads_wrapper.is_rewarded_loaded()
     local network = ads_wrapper.get_current_network()
     local next_network = ads_wrapper.get_next_network()
-    print_log(self, "is_rewarded_loaded", {value = value, current = network.NAME, next = next_network.NAME})
+    print_log(self, "is_rewarded_loaded", { value = value, current = network.NAME, next = next_network.NAME })
 end
 
 local function is_interstitial_loaded(self)
     local value = ads_wrapper.is_interstitial_loaded()
     local network = ads_wrapper.get_current_network()
     local next_network = ads_wrapper.get_next_network()
-    print_log(self, "is_interstitial_loaded", {value = value, current = network.NAME, next = next_network.NAME})
+    print_log(self, "is_interstitial_loaded", { value = value, current = network.NAME, next = next_network.NAME })
 end
 
 local function is_banner_loaded(self)
     local value = ads_wrapper.is_banner_loaded()
     local network = ads_wrapper.get_current_network(true)
     local next_network = ads_wrapper.get_next_network(true)
-    print_log(self, "is_banner_loaded", {value = value, current = network.NAME, next = next_network.NAME})
+    print_log(self, "is_banner_loaded", { value = value, current = network.NAME, next = next_network.NAME })
 end
 
 local function init_test(self)
     ads_wrapper.clear_networks()
     local test = require("ads_wrapper.ads_networks.test")
-    local test_1_id = ads_wrapper.register_network(test.network1, {param = "test_param 1"})
-    local test_2_id = ads_wrapper.register_network(test.network2, {param = "test_param 2"})
-    ads_wrapper.setup_video({{id = test_1_id, count = 1}, {id = test_2_id, count = 2}, {id = test_1_id, count = 2}}, 4)
-    ads_wrapper.setup_banner({{id = test_1_id, count = 1}})
+    local test_1_id = ads_wrapper.register_network(test.network1, { param = "test_param 1" })
+    local test_2_id = ads_wrapper.register_network(test.network2, { param = "test_param 2" })
+    ads_wrapper.setup_video({ { id = test_1_id, count = 1 }, { id = test_2_id, count = 2 }, { id = test_1_id, count = 2 } }, 4)
+    ads_wrapper.setup_banner({ { id = test_1_id, count = 1 } })
     ads_wrapper.init(true, true, function(response)
         print_log(self, "init_test", response)
     end)
@@ -190,10 +190,10 @@ local function init_mobiles(self)
         -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
-            ids = {[platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385"},
+            ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" },
             [ads_wrapper.T_REWARDED] = "rewardedVideo",
             [ads_wrapper.T_INTERSTITIAL] = "video",
-            [ads_wrapper.T_BANNER] = {id = "banner", size = {width = 720, height = 90}, position = unityads.BANNER_POSITION_BOTTOM_RIGHT}
+            [ads_wrapper.T_BANNER] = { id = "banner", size = { width = 720, height = 90 }, position = unityads.BANNER_POSITION_BOTTOM_RIGHT }
         })
 
         -- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
@@ -208,8 +208,8 @@ local function init_mobiles(self)
             }
         })
 
-        ads_wrapper.setup_video({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 3}, {id = admob_net_id, count = 3}}, 6)
-        ads_wrapper.setup_banner({{id = admob_net_id, count = 2}, {id = unity_net_id, count = 1}}, 6)
+        ads_wrapper.setup_video({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 3 }, { id = admob_net_id, count = 3 } }, 6)
+        ads_wrapper.setup_banner({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 1 } }, 6)
         print_log(self, "init_mobiles", "Admob and Unity Ads set up")
         show_ads_buttons(self)
     else
@@ -224,7 +224,7 @@ local function init_poki(self)
         -- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/refs/tags/1.3.0.zip
         local poki = require("ads_wrapper.ads_networks.poki")
         local poki_net_id = ads_wrapper.register_network(poki)
-        ads_wrapper.setup_video({{id = poki_net_id}})
+        ads_wrapper.setup_video({ { id = poki_net_id } })
         print_log(self, "init_poki", "Poki set up")
         -- Poki has no banners
         show_ads_buttons(self)
@@ -303,8 +303,8 @@ local function init_applovin_max(self)
             verbose_logging = true
         })
 
-        ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
-        ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
+        ads_wrapper.setup_video({ { id = applovin_max_net_id, count = 1 } }, 1)
+        ads_wrapper.setup_banner({ { id = applovin_max_net_id, count = 1 } }, 1)
         print_log(self, "init_applovin_max", "Applovin Max Ads set up")
         show_ads_buttons(self)
         set_button_state(self.btn_mediation_applovin, true)
