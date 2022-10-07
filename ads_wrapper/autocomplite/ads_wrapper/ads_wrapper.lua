@@ -21,7 +21,8 @@ end
 ---Setups banner mediator
 ---@param order table
 ---@param repeat_count number
-function ads_wrapper.setup_banner(order, repeat_count)
+---@param _banner_auto_hide boolean Default `false`
+function ads_wrapper.setup_banner(order, repeat_count, _banner_auto_hide)
 end
 
 ---Checks for internet connection

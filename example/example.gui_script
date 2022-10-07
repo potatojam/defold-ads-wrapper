@@ -209,7 +209,7 @@ local function init_mobiles(self)
         })
 
         ads_wrapper.setup_video({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 3 }, { id = admob_net_id, count = 3 } }, 6)
-        ads_wrapper.setup_banner({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 1 } }, 6)
+        ads_wrapper.setup_banner({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 1 } }, 6, true)
         print_log(self, "init_mobiles", "Admob and Unity Ads set up")
         show_ads_buttons(self)
     else

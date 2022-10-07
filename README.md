@@ -184,7 +184,7 @@ Setups interstitial and reward mediator. More info [here](#mediators).
 - order <kbd>table</kbd> _required_ Ad display order. This is an array that contains objects like `{id = network_id, count = 2}`.
 - repeat_cut <kbd>number</kbd> _optional_ specified if after the first cycle in queue it is necessary to cut off a part of the order. Default: the total number of all networks.
 
-### `ads_wrapper.setup_banner(order, repeat_count)`
+### `ads_wrapper.setup_banner(order, repeat_count, _banner_auto_hide)`
 
 Setups banner mediator. More info [here](#mediators).
 
@@ -192,6 +192,7 @@ Setups banner mediator. More info [here](#mediators).
 
 - order <kbd>table</kbd> _required_ Ad display order. This is an array that contains objects like `{id = network_id, count = 2}`.
 - repeat_cut <kbd>number</kbd> _optional_ specified if after the first cycle in queue it is necessary to cut off a part of the order. Default: the total number of all networks.
+- _banner_auto_hide <kbd>boolean</kbd> _optional_ The banner will be automatically hidden if `hide_banner` was called after `show_banner`, but the banner did not have time to load. Default: `false`
 
 ### `ads_wrapper.init(initilize_video, initilize_banner, callback)`
 

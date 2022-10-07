@@ -22,6 +22,9 @@ local networks = {}
 local queues = {}
 local initialized = false
 
+local banner_auto_hide = false
+local banner_hided = true
+
 ---Handler for error when mediator isn't setup
 ---@param name string mediator name
 ---@param callback function
@@ -161,7 +164,9 @@ end
 ---Setups banner mediator
 ---@param order table
 ---@param repeat_count number
-function M.setup_banner(order, repeat_count)
+---@param _banner_auto_hide boolean Default `false`
+function M.setup_banner(order, repeat_count, _banner_auto_hide)
+    banner_auto_hide = _banner_auto_hide
     banner_mediator = mediator.create_mediator()
     mediator.setup(banner_mediator, networks, order, repeat_count)
 end
@@ -276,7 +281,13 @@ end
 ---@param callback function the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_setup() then
-        mediator.call(banner_mediator, queues.show_banner, callback)
+        banner_hided = false
+        mediator.call(banner_mediator, queues.show_banner, function(response)
+            if banner_auto_hide and banner_hided then
+                M.hide_banner()
+            end
+            handle(callback, response)
+        end)
     else
         mediator_error(BANNER, callback)
     end
@@ -286,6 +297,7 @@ end
 ---@param callback function the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_setup() then
+        banner_hided = true
         mediator.call_current(banner_mediator, queues.hide_banner, callback)
     else
         mediator_error(BANNER, callback)

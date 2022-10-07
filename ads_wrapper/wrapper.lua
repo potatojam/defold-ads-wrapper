@@ -170,7 +170,7 @@ end
 function M.show_banner(network, callback)
     if banner_network then
         M.hide_network_banner(banner_network, function(response)
-            --TODO ERROR
+            --TODO: if error occured
             M.show_network_banner(network, callback)
         end)
     else
