@@ -35,7 +35,7 @@ end
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result hash
+---@param result table
 local function callback_delay(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -46,7 +46,7 @@ end
 
 ---Call saved `module_callback` in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result hash
+---@param result table
 local function callback_once_delay(result)
     if module_callback then
         timer.delay(0, false, function()
@@ -407,7 +407,7 @@ end
 
 ---Sets banner position.
 ---@param position table table `{x = string, y = string}`
----@return hash
+---@return table
 function M.set_banner_position(position)
     if not position then
         return helper.error("YANDEX: Position must be given")

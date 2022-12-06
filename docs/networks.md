@@ -5,6 +5,7 @@
 * [Unity Ads](#unity-ads)
 * [Poki](#poki)
 * [Yandex](#yandex)
+* [Yandex Mobile Ads](#yandex-mobile-ads)
 * [Vk Bridge](#vk-bridge)
 * [Applovin Max](#applovin-max)
 * [Admob and Unity Ads](#admob-and-unity-ads)
@@ -34,7 +35,7 @@ end)
 
 The network uses [this](https://github.com/defold/extension-admob) extension.
 In the `debug` mode will always be used test keys.
-Verified version: **2.1.2**
+Verified version: **3.0.1**
 
 > &#x26a0;&#xfe0f; Don't forget to add settings to game.project
 
@@ -47,7 +48,7 @@ You need to set:
   * position <kbd>number</kbd> _optional_ banner position. Default `admob.POS_NONE`.
 
 ```lua
--- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
+-- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/3.0.1.zip
 local admob_module = require("ads_wrapper.ads_networks.admob")
 local admob_net_id = ads_wrapper.register_network(admob_module, {
     [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
@@ -64,7 +65,7 @@ local admob_net_id = ads_wrapper.register_network(admob_module, {
 
 The network uses [this](https://github.com/AGulev/DefVideoAds) extension.
 In the `debug` mode will always be used test keys.
-Verified version: **4.2.2**
+Verified version: **4.5.1**
 
 You need to set:
 * ids <kbd>table</kbd> _required_ 
@@ -78,7 +79,7 @@ You need to set:
   * position <kbd>number</kbd> _optional_ banner position. Default `unityads.BANNER_POSITION_TOP_CENTER`.
 
 ```lua
--- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.1.2.zip
+-- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.5.1.zip
 local unity = require("ads_wrapper.ads_networks.unity")
 local platform = require("ads_wrapper.platform")
 local unity_net_id = ads_wrapper.register_network(unity, {
@@ -131,6 +132,30 @@ local yandex_net_id = ads_wrapper.register_network(yandex, {
 })
 ads_wrapper.setup_video({{id = yandex_net_id, count = 1}}, 1)
 ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
+```
+
+## Yandex Mobile Ads
+
+The network uses [this](https://github.com/osov/defold-yandex-sdk-ads) extension.
+In the `debug` mode will always be used test keys.
+Verified version: **1.0**
+
+You need to set:
+* [ads_wrapper.T_INTERSTITIAL] <kbd>string</kbd> _required_ key for interstitial ads
+* [ads_wrapper.T_REWARDED] <kbd>string</kbd> _required_ key for rewarded ads
+* [ads_wrapper.T_BANNER] <kbd>string</kbd> _optional_ key for banner
+
+```lua
+-- Need to add the extension: https://github.com/osov/defold-yandex-sdk-ads/releases/download/1.0/defold-yandex-sdk-ads.zip
+local yandex_mobiles = require("ads_wrapper.ads_networks.yandex_mobile")
+local yandex_mobiles_net_id = ads_wrapper.register_network(yandex_mobiles, {
+    [ads_wrapper.T_BANNER] = "R-M-DEMO-300x250",
+    [ads_wrapper.T_INTERSTITIAL] = "R-M-DEMO-interstitial",
+    [ads_wrapper.T_REWARDED] = "R-M-DEMO-rewarded-client-side-rtb"
+})
+
+ads_wrapper.setup_video({ { id = yandex_mobiles_net_id, count = 1 } })
+ads_wrapper.setup_banner({ { id = yandex_mobiles_net_id, count = 1 } })
 ```
 
 ## Vk Bridge

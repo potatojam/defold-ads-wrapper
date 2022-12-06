@@ -38,7 +38,7 @@ end
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result hash
+---@param result table
 local function handle(callback, result)
     if callback then
         timer.delay(0, false, function()

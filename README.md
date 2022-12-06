@@ -13,6 +13,7 @@ Supported services:
 * Unity Ads
 * Poki
 * Yandex
+* Yandex Mobile Ads
 * Vk Bridge
 * Applovin Max
 
@@ -455,6 +456,7 @@ More information can be found at the links:
 * [Unity Ads](docs/networks.md#unity-ads)
 * [Poki](docs/networks.md#poki)
 * [Yandex](docs/networks.md#yandex)
+* [Yandex Mobile Ads](docs/networks.md#yandex-mobile-ads)
 * [Vk Bridge](docs/networks.md#vk-bridge)
 * [Applovin Max](docs/networks.md#applovin-max)
 * [Admob and Unity Ads](docs/networks.md#admob-and-unity-ads)

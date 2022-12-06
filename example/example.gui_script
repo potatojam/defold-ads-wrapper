@@ -187,7 +187,7 @@ local function init_mobiles(self)
     if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.2.2.zip
+        -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.5.1.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
             ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" },
@@ -196,7 +196,7 @@ local function init_mobiles(self)
             [ads_wrapper.T_BANNER] = { id = "banner", size = { width = 720, height = 90 }, position = unityads.BANNER_POSITION_BOTTOM_RIGHT }
         })
 
-        -- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/2.1.2.zip
+        -- Need to add the extension: https://github.com/defold/extension-admob/archive/refs/tags/3.0.1.zip
         local admob_module = require("ads_wrapper.ads_networks.admob")
         local admob_net_id = ads_wrapper.register_network(admob_module, {
             [ads_wrapper.T_REWARDED] = "ca-app-pub-3940256099942544/5224354917",
@@ -313,6 +313,27 @@ local function init_applovin_max(self)
     end
 end
 
+local function init_yandex_mobile(self)
+    if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
+        ads_wrapper.clear_networks()
+
+        -- Need to add the extension: https://github.com/osov/defold-yandex-sdk-ads/releases/download/1.0/defold-yandex-sdk-ads.zip
+        local yandex_mobiles = require("ads_wrapper.ads_networks.yandex_mobile")
+        local yandex_mobiles_net_id = ads_wrapper.register_network(yandex_mobiles, {
+            [ads_wrapper.T_BANNER] = "R-M-DEMO-300x250",
+            [ads_wrapper.T_INTERSTITIAL] = "R-M-DEMO-interstitial",
+            [ads_wrapper.T_REWARDED] = "R-M-DEMO-rewarded-client-side-rtb"
+        })
+
+        ads_wrapper.setup_video({ { id = yandex_mobiles_net_id, count = 1 } })
+        ads_wrapper.setup_banner({ { id = yandex_mobiles_net_id, count = 1 } })
+        print_log(self, "init_yandex_mobile", "Yandex Mobile Ads set up")
+        show_ads_buttons(self)
+    else
+        print_log(self, "init_yandex_mobile", "Yandex Mobile Ads not support on this platform")
+    end
+end
+
 ---Create a button and add it to the services table
 ---@param self userdata
 ---@param name string node functions
@@ -360,6 +381,7 @@ function init(self)
     create_service_button(self, "btn_init_yandex", init_yandex)
     create_service_button(self, "btn_init_vk", init_vk)
     create_service_button(self, "btn_init_applovin", init_applovin_max)
+    create_service_button(self, "btn_init_yandex_mobile", init_yandex_mobile)
 
     create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
     create_ads_button(self, "btn_show_interstitial", on_show_interstitial)
