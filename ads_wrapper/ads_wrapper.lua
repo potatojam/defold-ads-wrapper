@@ -229,60 +229,71 @@ end
 
 ---Loads rewarded ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.load_rewarded(callback)
     if M.is_video_setup() then
-        mediator.call_next(video_mediator, queues.load_rewarded, callback)
+        return mediator.call_next(video_mediator, queues.load_rewarded, callback)
     else
         mediator_error(VIDEO, callback)
     end
+    return nil
 end
 
 ---Shows rewarded ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.show_rewarded(callback)
     if M.is_video_setup() then
-        mediator.call(video_mediator, queues.show_rewarded, callback)
+        return mediator.call(video_mediator, queues.show_rewarded, callback)
     else
         mediator_error(VIDEO, callback)
     end
+    return nil
 end
 
 ---Loads interstitial ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.load_interstitial(callback)
     if M.is_video_setup() then
-        mediator.call_next(video_mediator, queues.load_interstitial, callback)
+        return mediator.call_next(video_mediator, queues.load_interstitial, callback)
     else
         mediator_error(VIDEO, callback)
     end
+    return nil
 end
 
 ---Shows interstitial ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.show_interstitial(callback)
     if M.is_video_setup() then
-        mediator.call(video_mediator, queues.show_interstitial, callback)
+        return mediator.call(video_mediator, queues.show_interstitial, callback)
     else
         mediator_error(VIDEO, callback)
     end
+    return nil
 end
 
 ---Loads banner for for next network.
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.load_banner(callback)
     if M.is_banner_setup() then
-        mediator.call_next(banner_mediator, queues.load_banner, callback)
+        return mediator.call_next(banner_mediator, queues.load_banner, callback)
     else
         mediator_error(BANNER, callback)
     end
+    return nil
 end
 
 ---Shows setup banner for next network. Hides the previous banner if it was displayed.
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function M.show_banner(callback)
     if M.is_banner_setup() then
         banner_hided = false
-        mediator.call(banner_mediator, queues.show_banner, function(response)
+        return mediator.call(banner_mediator, queues.show_banner, function(response)
             if banner_auto_hide and banner_hided then
                 M.hide_banner()
             end
@@ -291,6 +302,7 @@ function M.show_banner(callback)
     else
         mediator_error(BANNER, callback)
     end
+    return nil
 end
 
 ---Hides setup banner for current network
@@ -392,6 +404,12 @@ function M.get_next_network(check_banner)
     end
     local network = mediator.get_next_network(used_mediator, true)
     return network
+end
+
+---Cancel execution
+---@param id integer
+function M.cancel(id)
+    mediator.cancel(id)
 end
 
 return M

@@ -5,6 +5,30 @@ local M = {}
 local is_verbose = false
 local verbose_mode = events.V_NONE
 
+local MAX_ID = 99999999
+local ID = 0
+
+local coroutines = {}
+
+---Return new id
+---@return integer
+local function get_id()
+    ID = ID + 1
+    if ID > MAX_ID then
+        ID = 0
+    end
+    return ID
+end
+
+---Put coroutine to the table
+---@param co thread
+---@return integer
+local function save_coroutine(co)
+    local id = get_id()
+    coroutines[id] = co
+    return id
+end
+
 ---Resumes coroutine. Throws an error on exception
 ---@param co thread coroutine thread
 ---@param ... any
@@ -53,8 +77,10 @@ end
 ---@param queue table
 ---@param network network
 ---@param callback function callback accepting the response result
+---@return integer
 function M.run(queue, network, callback)
     local length = #queue
+    local id
     local co = coroutine.create(function()
         local response
         for i, fn in ipairs(queue) do
@@ -77,10 +103,18 @@ function M.run(queue, network, callback)
                 response = fn_response
                 break
             end
+            if not coroutines[id] then
+                fn_response.cancelled = true
+                response = fn_response
+                break
+            end
         end
+        coroutines[id] = nil
         callback(response)
     end)
+    id = save_coroutine(co)
     resume(co)
+    return id
 end
 
 ---Adds function to queue. Function must be like `func(network: network, callback: function)`
@@ -88,6 +122,12 @@ end
 ---@param fn function
 function M.add(queue, fn)
     table.insert(queue, fn)
+end
+
+---Cancel queue execution
+---@param id integer
+function M.cancel(id)
+    coroutines[id] = nil
 end
 
 return M

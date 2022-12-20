@@ -15,6 +15,7 @@ end
 ---@param queue table
 ---@param network network
 ---@param callback function callback accepting the response result
+---@return integer
 function queue.run(queue, network, callback)
 end
 
@@ -22,6 +23,11 @@ end
 ---@param queue table
 ---@param fn function
 function queue.add(queue, fn)
+end
+
+---Cancel queue execution
+---@param id integer
+function queue.cancel(id)
 end
 
 return queue

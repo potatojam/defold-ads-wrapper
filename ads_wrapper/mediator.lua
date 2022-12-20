@@ -5,11 +5,49 @@ local helper = require("ads_wrapper.ads_networks.helper")
 local M = {}
 
 ---@class mediator
----@field order table 
----@field networks table 
+---@field order table
+---@field networks table
 ---@field current_network_num number
 ---@field repeater number
 ---@field repeat_num number
+
+local MAX_ID = 99999999
+local ID = 0
+
+local coroutines = {}
+
+---Return new id
+---@return integer
+local function get_id()
+    ID = ID + 1
+    if ID > MAX_ID then
+        ID = 0
+    end
+    return ID
+end
+
+---Put coroutines to the table
+---@param co thread
+---@return integer
+local function save_coroutine(co)
+    local id = get_id()
+    coroutines[id] = {
+        co = co,
+        others = {}
+    }
+    return id
+end
+
+---Put others coroutines to the table
+---@param id integer
+---@param other_id integer
+local function save_other(id, other_id)
+    if not coroutines[id] then
+        error("Coroutine does not exist")
+    end
+    local others = coroutines[id].others
+    others[#others + 1] = other_id
+end
 
 -- Checks callback available and calls it passing the result
 ---@param callback function function
@@ -102,15 +140,17 @@ end
 ---@param mediator mediator
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
+---@return integer
 function M.call(mediator, q, callback)
     local co
+    local id
     co = coroutine.create(function()
         local checked = {}
         local response = helper.error("Something bad happened")
         for i = 1, mediator.repeat_num do
             local network = M.get_next_network(mediator)
             if not checked[network.NAME] then
-                queue.run(q, network, function(fn_response)
+                local queue_id = queue.run(q, network, function(fn_response)
                     if fn_response.result ~= events.SUCCESS then
                         checked[network.NAME] = true
                     end
@@ -118,55 +158,74 @@ function M.call(mediator, q, callback)
                     response = fn_response
                     resume(co)
                 end)
+                save_other(id, queue_id)
                 coroutine.yield(co)
             end
             if response.result == events.SUCCESS then
                 break
             end
+            if not coroutines[id] then
+                break
+            end
         end
+        coroutines[id] = nil
         handle(callback, response)
     end)
+    id = save_coroutine(co)
     resume(co)
+    return id
 end
 
 ---Tries to complete queue for current network in mediator
 ---@param mediator mediator
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
+---@return integer
 function M.call_current(mediator, q, callback)
     local co
+    local id
     co = coroutine.create(function()
         local response = helper.error("Something bad happened")
         local network = M.get_current_network(mediator)
-        queue.run(q, network, function(fn_response)
+        local queue_id = queue.run(q, network, function(fn_response)
             fn_response.name = network.NAME
             response = fn_response
             resume(co)
         end)
+        save_other(id, queue_id)
         coroutine.yield(co)
+        coroutines[id] = nil
         handle(callback, response)
     end)
+    id = save_coroutine(co)
     resume(co)
+    return id
 end
 
 ---Tries to complete queue for next network in mediator. Pointer does not switch
 ---@param mediator mediator
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
+---@return integer
 function M.call_next(mediator, q, callback)
     local co
+    local id
     co = coroutine.create(function()
         local response = helper.error("Something bad happened")
         local network = M.get_next_network(mediator, true)
-        queue.run(q, network, function(fn_response)
+        local queue_id = queue.run(q, network, function(fn_response)
             fn_response.name = network.NAME
             response = fn_response
             resume(co)
         end)
+        save_other(id, queue_id)
         coroutine.yield(co)
+        coroutines[id] = nil
         handle(callback, response)
     end)
+    id = save_coroutine(co)
     resume(co)
+    return id
 end
 
 ---Tries to complete queue for all networks in mediator
@@ -198,7 +257,7 @@ function M.call_all(mediator, q, callback)
     end
 end
 
----Add networks from another mediator 
+---Add networks from another mediator
 ---@param to mediator
 ---@param from mediator
 function M.add_networks(to, from)
@@ -206,6 +265,18 @@ function M.add_networks(to, from)
         for id, network in pairs(from.networks) do
             to.networks[id] = network
         end
+    end
+end
+
+---Cancel queue execution
+---@param id integer
+function M.cancel(id)
+    local object = coroutines[id]
+    if object then
+        for key, other_id in pairs(object.others) do
+            queue.cancel(other_id)
+        end
+        coroutines[id] = nil
     end
 end
 

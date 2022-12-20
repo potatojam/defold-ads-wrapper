@@ -31,6 +31,7 @@ end
 ---@param mediator mediator
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
+---@return integer
 function mediator.call(mediator, q, callback)
 end
 
@@ -38,6 +39,7 @@ end
 ---@param mediator mediator
 ---@param q queue queue object
 ---@param callback function callback accepting the response result
+---@return integer
 function mediator.call_current(mediator, q, callback)
 end
 
@@ -52,6 +54,11 @@ end
 ---@param to mediator
 ---@param from mediator
 function mediator.add_networks(to, from)
+end
+
+---Cancel execution
+---@param id integer
+function mediator.cancel(id)
 end
 
 return mediator

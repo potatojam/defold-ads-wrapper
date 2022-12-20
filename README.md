@@ -237,6 +237,10 @@ Queue: `check_connection->request_idfa->init->load_rewarded`
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
 
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
+
 ### `ads_wrapper.show_rewarded(callback)`
 
 Shows rewarded ads for next network. Callback contain a special `code` field with [events.C_SKIPPED](#response-codes) if the user skipped the ad.
@@ -246,6 +250,10 @@ Queue: `check_connection->request_idfa->init->load_rewarded->show_rewarded`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response).
+
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
 
 ### `ads_wrapper.load_interstitial(callback)`
 
@@ -257,6 +265,10 @@ Queue: `check_connection->request_idfa->init->load_interstitial`
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
 
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
+
 ### `ads_wrapper.show_interstitial(callback)`
 
 Shows interstitial ads for next network.
@@ -266,6 +278,10 @@ Queue: `check_connection->request_idfa->init->load_interstitial->show_interstiti
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
 
 ### `ads_wrapper.load_banner(callback)`
 
@@ -277,6 +293,10 @@ Queue: `check_connection->request_idfa->init->load_banner`
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
 
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
+
 ### `ads_wrapper.show_banner(callback)`
 
 Shows setup banner for next network. Hides the previous banner if it was displayed.
@@ -286,6 +306,10 @@ Queue: `check_connection->request_idfa->init->load_banner->show_banner`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+
+**Return**
+
+- id <kbd>integer|nil</kbd> id to cancel execution
 
 ### `ads_wrapper.hide_banner(callback)`
 
@@ -403,6 +427,15 @@ Default returns for the video mediator
 ### `ads_wrapper.clear_networks()`
 
 Remove all registered networks
+
+### `ads_wrapper.cancel(id)`
+
+Сancel execution of the next step in the queue.
+For example, if you cancel **show_interstitial** while the ad is loading, then it will not be shown.
+
+**Parameters**
+
+- id <kbd>number</kbd> _required_ queue id received from the function
 
 ## Constants
 

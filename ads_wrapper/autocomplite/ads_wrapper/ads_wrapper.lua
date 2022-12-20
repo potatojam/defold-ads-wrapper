@@ -49,31 +49,37 @@ end
 
 ---Loads rewarded ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.load_rewarded(callback)
 end
 
 ---Shows rewarded ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.show_rewarded(callback)
 end
 
 ---Loads interstitial ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.load_interstitial(callback)
 end
 
 ---Shows interstitial ads for next network
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.show_interstitial(callback)
 end
 
 ---Loads banner for all setup networks.
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.load_banner(callback)
 end
 
 ---Shows setup banner for next network. Hides the previous banner if it was displayed.
 ---@param callback function the function is called after execution.
+---@return integer|nil
 function ads_wrapper.show_banner(callback)
 end
 
@@ -139,6 +145,11 @@ end
 ---@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
 ---@return table
 function ads_wrapper.get_next_network(check_banner)
+end
+
+---Cancel execution
+---@param id integer
+function ads_wrapper.cancel(id)
 end
 
 return ads_wrapper
