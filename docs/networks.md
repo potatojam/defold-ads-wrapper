@@ -114,6 +114,9 @@ You need to set:
   * id <kbd>string</kbd> _required_ key for banner
   * size <kbd>table</kbd> _optional_ banner size. Default `{width = "100vw", height = "56vh"}`.
   * position <kbd>number</kbd> _optional_ banner position. Default `{x = "0px", y = "0px"}`.
+  * id <kbd>css_styles</kbd> _optional_ css style for banner creation
+  * id <kbd>css_show</kbd> _optional_ css style to show banner
+  * id <kbd>css_hide</kbd> _optional_ css style to hide banner
 
 Yandex must be configured in the module: `yandex.set_yandex_extention(yagames, sitelock)`
 

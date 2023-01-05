@@ -176,28 +176,28 @@ local function banner_create_handler(self, err, data)
     is_load_started = false
     if not err then
         banner_loaded = true
-        yagames.is_banners_on = true
         M.hide_banner()
         callback_once_delay(helper.success())
     else
-        callback_once_delay(helper.error("YANDEX: banner create error: " .. err))
+        yagames.banner_destroy(banner_id)
+        callback_once_delay(helper.error("YANDEX: banner create error: " .. tostring(err)))
     end
 end
 
 ---Creates css. Use `banner_configs`.
 ---@return string
-local function create_css_style()
+local function create_css_style(css_styles)
     return "width: " ..
         banner_configs.size.width .. ";height: " .. banner_configs.size.height .. ";top: " .. banner_configs.position.y .. ";left: " ..
         banner_configs.position.x ..
-        ";" .. (banner_settings.css_styles or "align-items: center;justify-content: center;overflow: hidden;display: flex;")
+        ";" .. (css_styles or "align-items: center;justify-content: center;overflow: hidden;display: flex;")
 end
 
 ---Creates a banner according to the specified parameters
 local function create_banner()
     yagames.banner_create(banner_id, {
         stat_id = banner_settings.stat_id,
-        css_styles = create_css_style(),
+        css_styles = create_css_style(banner_settings.css_styles),
         css_class = banner_settings.css_class
     }, banner_create_handler)
 end
@@ -205,7 +205,7 @@ end
 ---Updates css style for loaded banner
 local function update_css()
     if M.is_banner_loaded() then
-        yagames.banner_set(banner_id, "css_styles", create_css_style())
+        yagames.banner_set(banner_id, "css_styles", create_css_style(banner_settings.css_styles))
     end
 end
 
@@ -348,7 +348,7 @@ end
 ---@param callback function the function is called after execution.
 function M.load_banner(callback)
     if is_load_started or not M.is_banner_setup() then
-        callback_delay(callback, helper.error("YANDEX: Banner not setup"))
+        callback_delay(callback, helper.error("YANDEX: Banner not loaded"))
         return
     end
     is_load_started = true
@@ -384,7 +384,11 @@ end
 function M.show_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = true
-        yagames.banner_set(banner_id, "display", "flex")
+        if banner_settings.css_show then
+            yagames.banner_set(banner_id, "css_styles", create_css_style(banner_settings.css_show))
+        else
+            yagames.banner_set(banner_id, "display", "flex")
+        end
         yagames.banner_refresh(banner_id, function(self, err, data)
         end)
         callback_delay(callback, helper.success())
@@ -398,7 +402,11 @@ end
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
-        yagames.banner_set(banner_id, "display", "none")
+        if banner_settings.css_hide then
+            yagames.banner_set(banner_id, "css_styles", create_css_style(banner_settings.css_hide))
+        else
+            yagames.banner_set(banner_id, "display", "none")
+        end
         callback_delay(callback, helper.success())
     else
         callback_delay(callback, helper.error("YANDEX: Banner not loaded"))
