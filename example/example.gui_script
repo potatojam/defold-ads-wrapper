@@ -190,7 +190,7 @@ local function init_mobiles(self)
         -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.5.1.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
-            ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" },
+            ids = { [platform.PL_ANDROID] = "1401815",[platform.PL_IOS] = "1425385" },
             [ads_wrapper.T_REWARDED] = "rewardedVideo",
             [ads_wrapper.T_INTERSTITIAL] = "video",
             [ads_wrapper.T_BANNER] = { id = "banner", size = { width = 720, height = 90 }, position = unityads.BANNER_POSITION_BOTTOM_RIGHT }
@@ -237,12 +237,11 @@ local function init_yandex(self)
     if platform.is_same(platform.PL_HTML5) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/indiesoftby/defold-yagames/archive/refs/tags/0.7.4.zip
+        -- Need to add the extension: https://github.com/indiesoftby/defold-yagames/archive/refs/tags/0.9.0.zip
         pprint("Please uncomment lines when you adding extension")
         -- local yandex = require("ads_wrapper.ads_networks.yandex")
         -- local yagames = require("yagames.yagames")
-        -- local sitelock = require("yagames.sitelock")
-        -- yandex.set_yandex_extention(yagames, sitelock)
+        -- yandex.set_yandex_extention(yagames)
         -- local yandex_net_id = ads_wrapper.register_network(yandex, {
         --     [ads_wrapper.T_BANNER] = {id = "[your id here]", size = {width = "100vw", height = "56vh"}, position = {x = "0px", y = "0px"}}
         -- })

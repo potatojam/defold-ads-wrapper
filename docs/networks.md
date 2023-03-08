@@ -105,7 +105,7 @@ local poki_net_id = ads_wrapper.register_network(poki)
 ## Yandex
 
 The network uses [this](https://github.com/indiesoftby/defold-yagames) extension.
-Verified version: **0.7.4**
+Verified version: **0.9.0**
 
 > &#x26a0;&#xfe0f; Don't forget to add settings to game.project
 
@@ -118,14 +118,13 @@ You need to set:
   * id <kbd>css_show</kbd> _optional_ css style to show banner
   * id <kbd>css_hide</kbd> _optional_ css style to hide banner
 
-Yandex must be configured in the module: `yandex.set_yandex_extention(yagames, sitelock)`
+Yandex must be configured in the module: `yandex.set_yandex_extention(yagames)`
 
 ```lua
--- Need to add the extension: https://github.com/indiesoftby/defold-yagames/archive/refs/tags/0.7.4.zip
+-- Need to add the extension: https://github.com/indiesoftby/defold-yagames/archive/refs/tags/0.9.0.zip
 local yandex = require("ads_wrapper.ads_networks.yandex")
 local yagames = require("yagames.yagames")
-local sitelock = require("yagames.sitelock")
-yandex.set_yandex_extention(yagames, sitelock)
+yandex.set_yandex_extention(yagames)
 local yandex_net_id = ads_wrapper.register_network(yandex, {
     [ads_wrapper.T_BANNER] = {
         id = "[your id here]",

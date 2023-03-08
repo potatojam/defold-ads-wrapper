@@ -9,7 +9,6 @@ local parameters
 local module_callback
 
 local yagames
-local sitelock
 local is_yandex_initialized = false
 local is_player_initialized = false
 local is_storage_active = false
@@ -224,10 +223,8 @@ end
 
 ---Sets yandex extention
 ---@param ex_yagames any
----@param ex_sitelock any
-function M.set_yandex_extention(ex_yagames, ex_sitelock)
+function M.set_yandex_extention(ex_yagames)
     yagames = ex_yagames
-    sitelock = ex_sitelock
 end
 
 ---Asks the `player` sdk to save data
@@ -263,7 +260,7 @@ end
 ---Check if the environment supports yandex api
 ---@return bool
 function M.is_supported()
-    return yagames and sitelock.verify_domain()
+    return yagames
 end
 
 ---Returns Yandex.Games interface language in ISO 639-1 format.
@@ -398,7 +395,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback function the function is called after execution.
+---@param callback? function|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
