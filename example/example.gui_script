@@ -153,21 +153,27 @@ local function is_rewarded_loaded(self)
     local value = ads_wrapper.is_rewarded_loaded()
     local network = ads_wrapper.get_current_network()
     local next_network = ads_wrapper.get_next_network()
-    print_log(self, "is_rewarded_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    if network and next_network then
+        print_log(self, "is_rewarded_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    end
 end
 
 local function is_interstitial_loaded(self)
     local value = ads_wrapper.is_interstitial_loaded()
     local network = ads_wrapper.get_current_network()
     local next_network = ads_wrapper.get_next_network()
-    print_log(self, "is_interstitial_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    if network and next_network then
+        print_log(self, "is_interstitial_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    end
 end
 
 local function is_banner_loaded(self)
     local value = ads_wrapper.is_banner_loaded()
     local network = ads_wrapper.get_current_network(true)
     local next_network = ads_wrapper.get_next_network(true)
-    print_log(self, "is_banner_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    if network and next_network then
+        print_log(self, "is_banner_loaded", { value = value, current = network.NAME, next = next_network.NAME })
+    end
 end
 
 local function init_test(self)
@@ -175,12 +181,16 @@ local function init_test(self)
     local test = require("ads_wrapper.ads_networks.test")
     local test_1_id = ads_wrapper.register_network(test.network1, { param = "test_param 1" })
     local test_2_id = ads_wrapper.register_network(test.network2, { param = "test_param 2" })
-    ads_wrapper.setup_video({ { id = test_1_id, count = 1 }, { id = test_2_id, count = 2 }, { id = test_1_id, count = 2 } }, 4)
-    ads_wrapper.setup_banner({ { id = test_1_id, count = 1 } })
-    ads_wrapper.init(true, true, function(response)
-        print_log(self, "init_test", response)
-    end)
-    show_ads_buttons(self)
+    if test_1_id and test_2_id then
+        ads_wrapper.setup_video({ { id = test_1_id, count = 1 }, { id = test_2_id, count = 2 }, { id = test_1_id, count = 2 } }, 4)
+        ads_wrapper.setup_banner({ { id = test_1_id, count = 1 } })
+        ads_wrapper.init(true, true, function(response)
+            print_log(self, "init_test", response)
+        end)
+        show_ads_buttons(self)
+    else
+        print_log(self, "init_test", "Mobiles not support on this platform")
+    end
 end
 
 local function init_mobiles(self)
@@ -208,10 +218,14 @@ local function init_mobiles(self)
             }
         })
 
-        ads_wrapper.setup_video({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 3 }, { id = admob_net_id, count = 3 } }, 6)
-        ads_wrapper.setup_banner({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 1 } }, 6, true)
-        print_log(self, "init_mobiles", "Admob and Unity Ads set up")
-        show_ads_buttons(self)
+        if admob_net_id and unity_net_id then
+            ads_wrapper.setup_video({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 3 }, { id = admob_net_id, count = 3 } }, 6)
+            ads_wrapper.setup_banner({ { id = admob_net_id, count = 2 }, { id = unity_net_id, count = 1 } }, 6, true)
+            print_log(self, "init_mobiles", "Admob and Unity Ads set up")
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_mobiles", "Mobiles not support on this platform")
+        end
     else
         print_log(self, "init_mobiles", "Mobiles not support on this platform")
     end
@@ -224,10 +238,14 @@ local function init_poki(self)
         -- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/refs/tags/1.3.0.zip
         local poki = require("ads_wrapper.ads_networks.poki")
         local poki_net_id = ads_wrapper.register_network(poki)
-        ads_wrapper.setup_video({ { id = poki_net_id } })
-        print_log(self, "init_poki", "Poki set up")
-        -- Poki has no banners
-        show_ads_buttons(self)
+        if poki_net_id then
+            ads_wrapper.setup_video({ { id = poki_net_id } })
+            print_log(self, "init_poki", "Poki set up")
+            -- Poki has no banners
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_poki", "Mobiles not support on this platform")
+        end
     else
         print_log(self, "init_poki", "Poki not support on this platform")
     end
@@ -243,12 +261,16 @@ local function init_yandex(self)
         -- local yagames = require("yagames.yagames")
         -- yandex.set_yandex_extention(yagames)
         -- local yandex_net_id = ads_wrapper.register_network(yandex, {
-        --     [ads_wrapper.T_BANNER] = {id = "[your id here]", size = {width = "100vw", height = "56vh"}, position = {x = "0px", y = "0px"}}
+        --     [ads_wrapper.T_BANNER] = { id = "[your id here]", size = { width = "100vw", height = "56vh" }, position = { x = "0px", y = "0px" } }
         -- })
-        -- ads_wrapper.setup_video({{id = yandex_net_id, count = 1}}, 1)
-        -- ads_wrapper.setup_banner({{id = yandex_net_id, count = 1}}, 1)
-        -- print_log(self, "init_yandex", "Yandex set up")
-        show_ads_buttons(self)
+        -- if yandex_net_id then
+        --     ads_wrapper.setup_video({ { id = yandex_net_id, count = 1 } }, 1)
+        --     ads_wrapper.setup_banner({ { id = yandex_net_id, count = 1 } }, 1)
+        --     print_log(self, "init_yandex", "Yandex set up")
+        --     show_ads_buttons(self)
+        -- else
+        --     print_log(self, "init_yandex", "Yandex not support on this platform")
+        -- end
     else
         print_log(self, "init_yandex", "Yandex not support on this platform")
     end
@@ -264,12 +286,16 @@ local function init_vk(self)
         -- local vkbridge = require("vkbridge.vkbridge")
         -- vk.set_vkbridge_extention(vkbridge)
         -- local vk_net_id = ads_wrapper.register_network(vk, {
-        --     [ads_wrapper.T_BANNER] = {count = 1, possition = "top"}
+        --     [ads_wrapper.T_BANNER] = { count = 1, possition = "top" }
         -- })
-        -- ads_wrapper.setup_video({{id = vk_net_id, count = 1}}, 1)
-        -- ads_wrapper.setup_banner({{id = vk_net_id, count = 1}}, 1)
-        -- print_log(self, "init_vk", "Vk set up")
-        show_ads_buttons(self)
+        -- if vk_net_id then
+        --     ads_wrapper.setup_video({ { id = vk_net_id, count = 1 } }, 1)
+        --     ads_wrapper.setup_banner({ { id = vk_net_id, count = 1 } }, 1)
+        --     print_log(self, "init_vk", "Vk set up")
+        --     show_ads_buttons(self)
+        -- else
+        --     print_log(self, "init_vk", "Vk not support on this platform")
+        -- end
     else
         print_log(self, "init_vk", "Vk not support on this platform")
     end
@@ -302,11 +328,15 @@ local function init_applovin_max(self)
             verbose_logging = true
         })
 
-        ads_wrapper.setup_video({ { id = applovin_max_net_id, count = 1 } }, 1)
-        ads_wrapper.setup_banner({ { id = applovin_max_net_id, count = 1 } }, 1)
-        print_log(self, "init_applovin_max", "Applovin Max Ads set up")
-        show_ads_buttons(self)
-        set_button_state(self.btn_mediation_applovin, true)
+        if applovin_max_net_id then
+            ads_wrapper.setup_video({ { id = applovin_max_net_id, count = 1 } }, 1)
+            ads_wrapper.setup_banner({ { id = applovin_max_net_id, count = 1 } }, 1)
+            print_log(self, "init_applovin_max", "Applovin Max Ads set up")
+            show_ads_buttons(self)
+            set_button_state(self.btn_mediation_applovin, true)
+        else
+            print_log(self, "init_applovin_max", "Applovin Max not support on this platform")
+        end
     else
         print_log(self, "init_applovin_max", "Applovin Max not support on this platform")
     end
@@ -324,10 +354,14 @@ local function init_yandex_mobile(self)
             [ads_wrapper.T_REWARDED] = "R-M-DEMO-rewarded-client-side-rtb"
         })
 
-        ads_wrapper.setup_video({ { id = yandex_mobiles_net_id, count = 1 } })
-        ads_wrapper.setup_banner({ { id = yandex_mobiles_net_id, count = 1 } })
-        print_log(self, "init_yandex_mobile", "Yandex Mobile Ads set up")
-        show_ads_buttons(self)
+        if yandex_mobiles_net_id then
+            ads_wrapper.setup_video({ { id = yandex_mobiles_net_id, count = 1 } })
+            ads_wrapper.setup_banner({ { id = yandex_mobiles_net_id, count = 1 } })
+            print_log(self, "init_yandex_mobile", "Yandex Mobile Ads set up")
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_yandex_mobile", "Yandex Mobile Ads not support on this platform")
+        end
     else
         print_log(self, "init_yandex_mobile", "Yandex Mobile Ads not support on this platform")
     end

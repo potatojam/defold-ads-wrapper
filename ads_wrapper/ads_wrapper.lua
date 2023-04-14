@@ -1,9 +1,9 @@
-local M = {}
-
 local mediator = require("ads_wrapper.mediator")
 local queue = require("ads_wrapper.queue")
 local wrapper = require("ads_wrapper.wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
+
+local M = {}
 
 -- constants
 M.T_REWARDED = hash("T_REWARDED")
@@ -16,18 +16,21 @@ local VIDEO = "Video"
 
 M.is_debug = sys.get_engine_info().is_debug
 
+---@type ads_mediator
 local video_mediator
+---@type ads_mediator
 local banner_mediator
+---@type table<integer, ads_network>
 local networks = {}
+
 local queues = {}
 local initialized = false
-
 local banner_auto_hide = false
 local banner_hided = true
 
 ---Handler for error when mediator isn't setup
 ---@param name string mediator name
----@param callback function
+---@param callback ads_callback|nil
 local function mediator_error(name, callback)
     if callback then
         timer.delay(0, false, function()
@@ -36,9 +39,10 @@ local function mediator_error(name, callback)
     end
 end
 
----Call callback in the second frame. Send result.
+---Call callback in the second frame.
 ---It is necessary to use timer for the coroutine to continue.
----@param result table
+---@param callback ads_callback|nil
+---@param result ads_response
 local function handle(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -54,7 +58,7 @@ function M.is_internet_connected()
 end
 
 ---Creates queue for initialization
----@return table
+---@return ads_queue
 local function create_init()
     local q = queue.create()
     queue.add(q, wrapper.check_connection)
@@ -64,7 +68,7 @@ local function create_init()
 end
 
 ---Creates queue for load_interstitial function
----@return table
+---@return ads_queue
 local function create_load_interstitial()
     local q = create_init()
     queue.add(q, wrapper.load_interstitial)
@@ -72,7 +76,7 @@ local function create_load_interstitial()
 end
 
 ---Creates queue for show_interstitial function
----@return table
+---@return ads_queue
 local function create_show_interstitial()
     local q = create_load_interstitial()
     queue.add(q, wrapper.show_interstitial)
@@ -80,7 +84,7 @@ local function create_show_interstitial()
 end
 
 ---Creates queue for load_rewarded function
----@return table
+---@return ads_queue
 local function create_load_rewarded()
     local q = create_init()
     queue.add(q, wrapper.load_rewarded)
@@ -88,7 +92,7 @@ local function create_load_rewarded()
 end
 
 ---Creates queue for show_rewarded function
----@return table
+---@return ads_queue
 local function create_show_rewarded()
     local q = create_load_rewarded()
     queue.add(q, wrapper.show_rewarded)
@@ -96,7 +100,7 @@ local function create_show_rewarded()
 end
 
 ---Creates queue for load_banner function
----@return table
+---@return ads_queue
 local function create_load_banner()
     local q = create_init()
     queue.add(q, wrapper.load_banner)
@@ -104,7 +108,7 @@ local function create_load_banner()
 end
 
 ---Creates queue for show_banner function
----@return table
+---@return ads_queue
 local function create_show_banner()
     local q = queue.create()
     queue.add(q, wrapper.check_connection)
@@ -117,7 +121,7 @@ local function create_show_banner()
 end
 
 ---Creates queue for unload_banner function
----@return table
+---@return ads_queue
 local function create_unload_banner()
     local q = queue.create()
     queue.add(q, wrapper.unload_banner)
@@ -125,7 +129,7 @@ local function create_unload_banner()
 end
 
 ---Creates queue for hide_banner function
----@return table
+---@return ads_queue
 local function create_hide_banner()
     local q = queue.create()
     queue.add(q, wrapper.hide_banner)
@@ -138,9 +142,9 @@ function M.clear_networks()
 end
 
 ---Registers network. Returns id
----@param network network
----@param params any parameters to be passed to the network.setup function
----@return number|nil
+---@param network ads_network
+---@param params any|nil parameters to be passed to the network.setup function
+---@return integer|nil
 function M.register_network(network, params)
     if network.is_supported() then
         local id = #networks + 1
@@ -154,27 +158,27 @@ function M.register_network(network, params)
 end
 
 ---Setups interstitial and reward mediator
----@param order table
----@param repeat_count number
+---@param order ads_order[]
+---@param repeat_count number|nil Specified if after the first cycle in queue it is necessary to cut off a part of the order. Default: the total number of all networks.
 function M.setup_video(order, repeat_count)
     video_mediator = mediator.create_mediator()
     mediator.setup(video_mediator, networks, order, repeat_count)
 end
 
 ---Setups banner mediator
----@param order table
----@param repeat_count number
----@param _banner_auto_hide boolean Default `false`
+---@param order ads_order[]
+---@param repeat_count number|nil Specified if after the first cycle in queue it is necessary to cut off a part of the order. Default: the total number of all networks.
+---@param _banner_auto_hide boolean|nil The banner will be automatically hidden if hide_banner was called after show_banner, but the banner did not have time to load. Default: `false`
 function M.setup_banner(order, repeat_count, _banner_auto_hide)
-    banner_auto_hide = _banner_auto_hide
+    banner_auto_hide = _banner_auto_hide or false
     banner_mediator = mediator.create_mediator()
     mediator.setup(banner_mediator, networks, order, repeat_count)
 end
 
 ---Initializes all networks.
----@param initilize_video boolean
----@param initilize_banner boolean
----@param callback function the function is called after execution.
+---@param initilize_video boolean|nil check if need to initialize video networks
+---@param initilize_banner boolean|nil check if need to initialize banner networks
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(initilize_video, initilize_banner, callback)
     if M.is_initialized() then
         handle(callback, helper.success("Ads Wrapper already initialized"))
@@ -208,7 +212,7 @@ function M.init(initilize_video, initilize_banner, callback)
 end
 
 ---Initialize video networks
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init_video_networks(callback)
     if video_mediator then
         mediator.call_all(video_mediator, queues.init, callback)
@@ -218,7 +222,7 @@ function M.init_video_networks(callback)
 end
 
 ---Initialize banner networks
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init_banner_networks(callback)
     if banner_mediator then
         mediator.call_all(banner_mediator, queues.init, callback)
@@ -228,7 +232,7 @@ function M.init_banner_networks(callback)
 end
 
 ---Loads rewarded ads for next network
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.load_rewarded(callback)
     if M.is_video_setup() then
@@ -240,7 +244,7 @@ function M.load_rewarded(callback)
 end
 
 ---Shows rewarded ads for next network
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.show_rewarded(callback)
     if M.is_video_setup() then
@@ -252,7 +256,7 @@ function M.show_rewarded(callback)
 end
 
 ---Loads interstitial ads for next network
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.load_interstitial(callback)
     if M.is_video_setup() then
@@ -264,7 +268,7 @@ function M.load_interstitial(callback)
 end
 
 ---Shows interstitial ads for next network
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.show_interstitial(callback)
     if M.is_video_setup() then
@@ -276,7 +280,7 @@ function M.show_interstitial(callback)
 end
 
 ---Loads banner for for next network.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.load_banner(callback)
     if M.is_banner_setup() then
@@ -288,7 +292,7 @@ function M.load_banner(callback)
 end
 
 ---Shows setup banner for next network. Hides the previous banner if it was displayed.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 ---@return integer|nil
 function M.show_banner(callback)
     if M.is_banner_setup() then
@@ -306,7 +310,7 @@ function M.show_banner(callback)
 end
 
 ---Hides setup banner for current network
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_setup() then
         banner_hided = true
@@ -317,7 +321,7 @@ function M.hide_banner(callback)
 end
 
 ---Unloads banner for current networks.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if M.is_banner_setup() then
         mediator.call_current(banner_mediator, queues.unload_banner, callback)
@@ -346,7 +350,7 @@ end
 
 ---Check if the interstitial video is loaded.
 ---Default checks the `next` network in mediator.
----@param check_current boolean `Optional` if need check current network. Default `false`
+---@param check_current boolean|nil `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_interstitial_loaded(check_current)
     if not M.is_video_setup() then
@@ -358,7 +362,7 @@ end
 
 ---Check if the rewarded video is loaded.
 ---Default checks the `next` network in mediator.
----@param check_current boolean `Optional` if need check current network. Default `false`
+---@param check_current boolean|nil `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_rewarded_loaded(check_current)
     if not M.is_video_setup() then
@@ -370,7 +374,7 @@ end
 
 ---Check if the banner is loaded.
 ---Default checks the `next` network in mediator.
----@param check_current boolean `Optional` if need check current network. Default `false`
+---@param check_current boolean|nil `Optional` if need check current network. Default `false`
 ---@return boolean
 function M.is_banner_loaded(check_current)
     if not M.is_banner_setup() then
@@ -382,8 +386,8 @@ end
 
 ---Returns the current network pointed to by mediator
 ---Default returns for the video mediator
----@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
----@return table|nil
+---@param check_banner boolean|nil `Optional` need to return mediator for banners. Default `false`
+---@return ads_network|nil
 function M.get_current_network(check_banner)
     local used_mediator = check_banner and banner_mediator or video_mediator
     if not used_mediator then
@@ -395,8 +399,8 @@ end
 
 ---Returns the next network pointed to by mediator
 ---Default returns for the video mediator
----@param check_banner boolean `Optional` need to return mediator for banners. Default `false`
----@return table|nil
+---@param check_banner boolean|nil `Optional` need to return mediator for banners. Default `false`
+---@return ads_network|nil
 function M.get_next_network(check_banner)
     local used_mediator = check_banner and banner_mediator or video_mediator
     if not used_mediator then

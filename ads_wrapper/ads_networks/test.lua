@@ -1,6 +1,6 @@
-local M = {}
-
 local helper = require("ads_wrapper.ads_networks.helper")
+
+local M = {}
 
 M.is_debug = sys.get_engine_info().is_debug
 

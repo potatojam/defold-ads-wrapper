@@ -1,11 +1,12 @@
-local M = { NAME = "yandex" }
--- Extention: https://github.com/indiesoftby/defold-yagames
-
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
 local events = require("ads_wrapper.events")
 
+local M = { NAME = "yandex" }
+-- Extention: https://github.com/indiesoftby/defold-yagames
+
 local parameters
+---@type ads_callback|nil
 local module_callback
 
 local yagames
@@ -23,7 +24,7 @@ local is_opened = false
 local banner_configs = { size = { width = "100vw", height = "56vh" }, position = { x = "0px", y = "0px" } }
 
 -- Call saved `module_callback` only once. Send result.
----@param result any
+---@param result ads_response
 local function callback_once(result)
     if module_callback then
         local callback = module_callback
@@ -34,7 +35,8 @@ end
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result table
+---@param callback ads_callback|nil
+---@param result ads_response
 local function callback_delay(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -45,7 +47,7 @@ end
 
 ---Call saved `module_callback` in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result table
+---@param result ads_response
 local function callback_once_delay(result)
     if module_callback then
         timer.delay(0, false, function()
@@ -228,7 +230,7 @@ function M.set_yandex_extention(ex_yagames)
 end
 
 ---Asks the `player` sdk to save data
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.get_player(callback)
     if not is_player_initialized then
         module_callback = callback
@@ -251,7 +253,7 @@ function M.setup(params)
 end
 
 -- Initializes `yandex` sdk.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(callback)
     module_callback = callback
     yagames.init(yandex_init_handler)
@@ -283,7 +285,7 @@ function M.is_initialized()
 end
 
 -- Shows rewarded popup.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     is_reward_get = false
     module_callback = callback
@@ -291,7 +293,7 @@ function M.show_rewarded(callback)
 end
 
 -- Not used.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_rewarded(callback)
     module_callback = callback
     callback_once_delay(helper.success())
@@ -304,14 +306,14 @@ function M.is_rewarded_loaded()
 end
 
 -- Shows interstitial popup.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
     yagames.adv_show_fullscreen_adv({ open = adv_open, close = adv_close, offline = adv_offline, error = adv_error })
 end
 
 -- Not used.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_interstitial(callback)
     module_callback = callback
     callback_once_delay(helper.success())
@@ -342,7 +344,7 @@ function M.is_banner_setup()
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_banner(callback)
     if is_load_started or not M.is_banner_setup() then
         callback_delay(callback, helper.error("YANDEX: Banner not loaded"))
@@ -358,7 +360,7 @@ function M.load_banner(callback)
 end
 
 ---Unloads active banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if M.is_banner_loaded() then
         banner_loaded = false
@@ -377,7 +379,7 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = true
@@ -395,7 +397,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback? function|nil the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
@@ -412,7 +414,7 @@ end
 
 ---Sets banner position.
 ---@param position table table `{x = string, y = string}`
----@return table
+---@return ads_response
 function M.set_banner_position(position)
     if not position then
         return helper.error("YANDEX: Position must be given")
@@ -429,7 +431,7 @@ end
 
 ---Sets banner size.
 ---@param size table table `{width = string, height = string}`
----@return table
+---@return ads_response
 function M.set_banner_size(size)
     if not size then
         return helper.error("YANDEX: Size must be given")

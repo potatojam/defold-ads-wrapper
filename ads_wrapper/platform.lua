@@ -21,7 +21,7 @@ else
     platform = M.PL_OTHER
 end
 
----Сheck if the platform is correct
+---Check if the platform is correct
 ---@param value hash
 ---@return boolean
 function M.is_same(value)
@@ -29,7 +29,7 @@ function M.is_same(value)
 end
 
 ---Returns current hash platform
----@return number|userdata
+---@return hash
 function M.get()
     return platform
 end

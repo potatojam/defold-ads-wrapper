@@ -4,13 +4,6 @@ local helper = require("ads_wrapper.ads_networks.helper")
 
 local M = {}
 
----@class mediator
----@field order table
----@field networks table
----@field current_network_num number
----@field repeater number
----@field repeat_num number
-
 local MAX_ID = 99999999
 local ID = 0
 
@@ -50,7 +43,7 @@ local function save_other(id, other_id)
 end
 
 -- Checks callback available and calls it passing the result
----@param callback function function
+---@param callback function|nil function
 local function handle(callback, ...)
     if callback then
         callback(...)
@@ -68,7 +61,7 @@ local function resume(co, ...)
 end
 
 ---Creates mediator.
----@return mediator
+---@return ads_mediator
 function M.create_mediator()
     local mediator = {}
     mediator.order = {}
@@ -80,10 +73,10 @@ function M.create_mediator()
 end
 
 ---Setups mediator
----@param mediator mediator
----@param networks table array with all available networks
----@param order table order of show ad. Array with objects like `{id = net_id, count = 2}`
----@param repeat_count number count of ads that will loop. From the end
+---@param mediator ads_mediator
+---@param networks table<integer, ads_network> array with all available networks
+---@param order ads_order[] order of show ad. Array with objects like `{id = net_id, count = 2}`
+---@param repeat_count number|nil count of ads that will loop. From the end
 function M.setup(mediator, networks, order, repeat_count)
     local is_auto_repeat = false
     if not repeat_count then
@@ -108,9 +101,9 @@ function M.setup(mediator, networks, order, repeat_count)
 end
 
 ---Returns the next network in the queue
----@param mediator mediator
----@param leave_pointer bool leaves the pointer on the same network. Default `false`
----@return table
+---@param mediator ads_mediator
+---@param leave_pointer bool|nil leaves the pointer on the same network. Default `false`
+---@return ads_network
 function M.get_next_network(mediator, leave_pointer)
     local network_num = mediator.current_network_num + 1
     if #mediator.order < network_num then
@@ -127,8 +120,8 @@ function M.get_next_network(mediator, leave_pointer)
 end
 
 ---Returns current nerwork in the queue
----@param mediator mediator
----@return table
+---@param mediator ads_mediator
+---@return ads_network
 function M.get_current_network(mediator)
     if mediator.current_network_num == 0 then
         return mediator.order[1]
@@ -137,9 +130,9 @@ function M.get_current_network(mediator)
 end
 
 ---Tries to complete queue for first networks in mediator. If not completed, then the next one starts.
----@param mediator mediator
----@param q queue queue object
----@param callback function callback accepting the response result
+---@param mediator ads_mediator
+---@param q ads_queue queue object
+---@param callback ads_callback|nil callback accepting the response result
 ---@return integer
 function M.call(mediator, q, callback)
     local co
@@ -177,9 +170,9 @@ function M.call(mediator, q, callback)
 end
 
 ---Tries to complete queue for current network in mediator
----@param mediator mediator
----@param q queue queue object
----@param callback function callback accepting the response result
+---@param mediator ads_mediator
+---@param q ads_queue queue object
+---@param callback ads_callback|nil callback accepting the response result
 ---@return integer
 function M.call_current(mediator, q, callback)
     local co
@@ -203,9 +196,9 @@ function M.call_current(mediator, q, callback)
 end
 
 ---Tries to complete queue for next network in mediator. Pointer does not switch
----@param mediator mediator
----@param q queue queue object
----@param callback function callback accepting the response result
+---@param mediator ads_mediator
+---@param q ads_queue queue object
+---@param callback ads_callback|nil callback accepting the response result
 ---@return integer
 function M.call_next(mediator, q, callback)
     local co
@@ -229,9 +222,9 @@ function M.call_next(mediator, q, callback)
 end
 
 ---Tries to complete queue for all networks in mediator
----@param mediator mediator
----@param q queue queue object
----@param callback function callback accepting the response result
+---@param mediator ads_mediator
+---@param q ads_queue queue object
+---@param callback ads_callback|nil callback accepting the response result
 function M.call_all(mediator, q, callback)
     local count = 0
     local response = helper.success()
@@ -258,8 +251,8 @@ function M.call_all(mediator, q, callback)
 end
 
 ---Add networks from another mediator
----@param to mediator
----@param from mediator
+---@param to ads_mediator
+---@param from ads_mediator
 function M.add_networks(to, from)
     if from and from.networks then
         for id, network in pairs(from.networks) do

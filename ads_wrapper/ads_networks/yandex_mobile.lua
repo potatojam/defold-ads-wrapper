@@ -5,13 +5,14 @@ local M = { NAME = "yandex_mobile" }
 -- Extention: https://github.com/osov/defold-yandex-sdk-ads
 
 local parameters
+---@type ads_callback|nil
 local module_callback
 local banner_showed = false
 local is_yandexads_initialized = false
 local is_reward_get = false
 
 ---Call saved `module_callback` only once.
----@param response any
+---@param response ads_response
 local function callback_once(response)
     if module_callback then
         local callback = module_callback
@@ -22,7 +23,7 @@ end
 
 ---Call callback in the second frame.
 ---It is necessary to use timer for the coroutine to continue.
----@param response table
+---@param response ads_response
 local function callback_delay(callback, response)
     if callback then
         timer.delay(0, false, function()
@@ -100,7 +101,7 @@ function M.setup(params)
 end
 
 ---Initializes `yandexads` sdk.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(callback)
     module_callback = callback
     if ads.is_debug then
@@ -125,7 +126,7 @@ function M.is_initialized()
 end
 
 ---Shows rewarded ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
     yandexads.set_callback(yandexads_callback)
@@ -133,7 +134,7 @@ function M.show_rewarded(callback)
 end
 
 ---Loads rewarded ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_rewarded(callback)
     module_callback = callback
     yandexads.set_callback(yandexads_callback)
@@ -147,7 +148,7 @@ function M.is_rewarded_loaded()
 end
 
 ---Shows interstitial ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
     yandexads.set_callback(yandexads_callback)
@@ -155,7 +156,7 @@ function M.show_interstitial(callback)
 end
 
 ---Loads interstitial ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_interstitial(callback)
     module_callback = callback
     yandexads.set_callback(yandexads_callback)
@@ -175,7 +176,7 @@ function M.is_banner_setup()
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_banner(callback)
     if not M.is_banner_setup() then
         callback_delay(callback, helper.error("yandexads: Banner not setup"))
@@ -187,7 +188,7 @@ function M.load_banner(callback)
 end
 
 ---Unloads active banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if M.is_banner_loaded() then
         module_callback = callback
@@ -206,7 +207,7 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
         yandexads.show_banner()
@@ -218,7 +219,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         yandexads.hide_banner()

@@ -1,11 +1,12 @@
-local M = { NAME = "vk" }
--- Extention: https://github.com/potatojam/defold-vkbridge
-
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
 
+local M = { NAME = "vk" }
+-- Extention: https://github.com/potatojam/defold-vkbridge
+
 local vkbridge
 local parameters
+---@type ads_callback|nil
 local module_callback
 
 local is_vk_initialized = false
@@ -18,7 +19,7 @@ local banner_showed = false
 local banner_configs = { count = 1, position = "top" }
 
 -- Call saved `module_callback` only once. Send result.
----@param result any
+---@param result ads_response
 local function callback_once(result)
     if module_callback then
         local callback = module_callback
@@ -29,7 +30,8 @@ end
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result hash
+---@param callback ads_callback|nil
+---@param result ads_response
 local function callback_delay(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -59,7 +61,7 @@ local function on_show_rewarded(self, err, data)
     if err then
         callback_once(helper.error("VK: on_show_rewarded error: " .. err.error_data.error_reason))
     else
-        if data.result then
+        if data and data.result then
             callback_once(helper.success())
         else
             callback_once(helper.skipped())
@@ -76,7 +78,7 @@ local function on_check_rewarded(self, err, data)
         is_reward_available = false
         callback_once(helper.error("VK: on_check_rewarded error: " .. err.error_data.error_reason))
     else
-        if data.result then
+        if data and data.result then
             is_reward_available = true
             callback_once(helper.success())
         else
@@ -95,7 +97,7 @@ local function on_check_interstitial(self, err, data)
         is_interstitial_available = false
         callback_once(helper.error("VK: on_check_interstitial error: " .. err.error_data.error_reason))
     else
-        if data.result then
+        if data and data.result then
             is_interstitial_available = true
             callback_once(helper.success())
         else
@@ -113,7 +115,7 @@ local function on_interstitial_showed(self, err, data)
     if err then
         callback_once(helper.error("VK: on_interstitial_showed error: " .. err.error_data.error_reason))
     else
-        if data.result then
+        if data and data.result then
             local response = helper.success()
             response.was_open = not data.exceeded
             response.delay_exceeded = data.delay_exceeded
@@ -135,7 +137,7 @@ local function on_load_banner(self, err, data)
     if err then
         callback_once(helper.error("VK: on_load_banner error: " .. err.error_data.error_reason))
     else
-        if data.result then
+        if data and data.result then
             banner_loaded = true
             is_fresh_banner = true
             callback_once(helper.success())
@@ -167,7 +169,7 @@ function M.setup(params)
 end
 
 -- Initializes `vk` sdk.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(callback)
     module_callback = callback
     vkbridge.init(vk_init_handler)
@@ -186,14 +188,14 @@ function M.is_initialized()
 end
 
 -- Shows rewarded popup.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
     vkbridge.show_rewarded(true, on_show_rewarded)
 end
 
 -- Check if rewarded video is available
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_rewarded(callback)
     module_callback = callback
     vkbridge.check_rewarded(true, on_check_rewarded)
@@ -206,14 +208,14 @@ function M.is_rewarded_loaded()
 end
 
 -- Shows interstitial popup.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
     vkbridge.show_interstitial(on_interstitial_showed)
 end
 
 -- Check if interstitial is available
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_interstitial(callback)
     module_callback = callback
     vkbridge.check_interstitial(on_check_interstitial)
@@ -232,7 +234,7 @@ function M.is_banner_setup()
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_banner(callback)
     if not vkbridge.is_webview() then
         callback_delay(callback, helper.error("Only works for webview"))
@@ -253,7 +255,7 @@ function M.load_banner(callback)
 end
 
 ---Unloads active banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if not vkbridge.is_webview() then
         callback_delay(callback, helper.error("Only works for webview"))
@@ -276,7 +278,7 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if not vkbridge.is_webview() then
         callback_delay(callback, helper.error("VK: Only works for webview"))
@@ -297,7 +299,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if not vkbridge.is_webview() then
         callback_delay(callback, helper.error("VK: Only works for webview"))
@@ -316,7 +318,7 @@ end
 
 ---Sets banner count.
 ---@param count number Default `1`
----@return hash
+---@return ads_response
 function M.set_banner_count(count)
     if not count then
         return helper.error("VK: Count must be given")
@@ -330,7 +332,7 @@ end
 
 ---Sets banner position.
 ---@param position string Can be `top` or `bottom`
----@return hash
+---@return ads_response
 function M.set_banner_position(position)
     if not position then
         return helper.error("VK: Position must be given")

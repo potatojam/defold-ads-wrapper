@@ -1,8 +1,8 @@
-local M = { NAME = "applovin_max" }
--- Extention: https://github.com/alexeyfeskov/defold-maxsdk
-
 local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
+
+local M = { NAME = "applovin_max" }
+-- Extention: https://github.com/alexeyfeskov/defold-maxsdk
 
 M.POS_BOTTOM_CENTER = "POS_BOTTOM_CENTER"
 M.POS_BOTTOM_LEFT = "POS_BOTTOM_LEFT"
@@ -18,6 +18,7 @@ M.SIZE_LEADER = "SIZE_LEADER"
 M.SIZE_MREC = "SIZE_MREC"
 
 local parameters
+---@type ads_callback|nil
 local module_callback
 local banner_showed = false
 local is_applovin_initialized = false
@@ -28,7 +29,7 @@ if maxsdk then
 end
 
 ---Call saved `module_callback` only once.
----@param response any
+---@param response ads_response
 local function callback_once(response)
     if module_callback then
         local callback = module_callback
@@ -39,7 +40,7 @@ end
 
 ---Call callback in the second frame.
 ---It is necessary to use timer for the coroutine to continue.
----@param response hash
+---@param response ads_response
 local function callback_delay(callback, response)
     if callback then
         timer.delay(0, false, function()
@@ -172,7 +173,7 @@ function M.setup(params)
 end
 
 ---Initializes `applovin_max` sdk.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(callback)
     module_callback = callback
     maxsdk.set_callback(maxsdk_callback)
@@ -192,7 +193,7 @@ function M.is_initialized()
 end
 
 ---Shows rewarded ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
     maxsdk.set_callback(maxsdk_callback)
@@ -200,7 +201,7 @@ function M.show_rewarded(callback)
 end
 
 ---Loads rewarded ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_rewarded(callback)
     module_callback = callback
     maxsdk.set_callback(maxsdk_callback)
@@ -214,7 +215,7 @@ function M.is_rewarded_loaded()
 end
 
 ---Shows interstitial ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
     maxsdk.set_callback(maxsdk_callback)
@@ -222,7 +223,7 @@ function M.show_interstitial(callback)
 end
 
 ---Loads interstitial ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_interstitial(callback)
     module_callback = callback
     maxsdk.set_callback(maxsdk_callback)
@@ -242,7 +243,7 @@ function M.is_banner_setup()
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_banner(callback)
     if not M.is_banner_setup() then
         callback_delay(callback, helper.error("APPLOVIN MAX: Banner not setup"))
@@ -256,7 +257,7 @@ function M.load_banner(callback)
 end
 
 ---Unloads active banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if M.is_banner_loaded() then
         module_callback = callback
@@ -275,7 +276,7 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
         module_callback = callback
@@ -294,7 +295,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         maxsdk.hide_banner()
@@ -316,7 +317,7 @@ end
 --- `applovin_max.POS_TOP_RIGHT`
 --- `applovin_max.POS_CENTER`
 ---@param position number banner position
----@return hash
+---@return ads_response
 function M.set_banner_position(position)
     if position or position == 0 then
         banner_configs.position = position
@@ -331,7 +332,7 @@ end
 --- `applovin_max.SIZE_LEADER`
 --- `applovin_max.SIZE_MREC`
 ---@param size number
----@return hash
+---@return ads_response
 function M.set_banner_size(size)
     if not size then
         return helper.error("APPLOVIN MAX: Size must be given")

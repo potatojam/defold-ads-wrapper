@@ -41,8 +41,8 @@ end
 
 ---Call function from queue
 ---@param fn function
----@param network network
----@return table
+---@param network ads_network
+---@return ads_response
 local function call(fn, network)
     local co = coroutine.running()
     assert(co, "You must call this from inside a coroutine")
@@ -67,16 +67,16 @@ function M.set_verbose_mode(mode)
 end
 
 ---Creates new queue
----@return table
+---@return ads_queue
 function M.create()
     local queue = {}
     return queue
 end
 
 ---Runs queue
----@param queue table
----@param network network
----@param callback function callback accepting the response result
+---@param queue ads_queue
+---@param network ads_network
+---@param callback ads_callback callback accepting the response result
 ---@return integer
 function M.run(queue, network, callback)
     local length = #queue
@@ -118,8 +118,8 @@ function M.run(queue, network, callback)
 end
 
 ---Adds function to queue. Function must be like `func(network: network, callback: function)`
----@param queue table
----@param fn function
+---@param queue ads_queue
+---@param fn ads_callback
 function M.add(queue, fn)
     table.insert(queue, fn)
 end

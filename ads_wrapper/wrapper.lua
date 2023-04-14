@@ -8,7 +8,8 @@ local banner_network = nil
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result table
+---@param callback ads_callback|nil
+---@param result ads_response
 local function handle(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -30,8 +31,8 @@ function M.get_idfa_result()
 end
 
 ---Checks for internet connection
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.check_connection(network, callback)
     if M.is_internet_connected() then
         handle(callback, helper.success())
@@ -43,8 +44,8 @@ function M.check_connection(network, callback)
 end
 
 ---Requests IDFA
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.request_idfa(network, callback)
     if idfa_result ~= nil then
         handle(callback, helper.success("IDFA already received"))
@@ -63,8 +64,8 @@ function M.request_idfa(network, callback)
 end
 
 ---Initializes network
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.init(network, callback)
     if network.is_initialized() then
         handle(callback, helper.success("Network already initialized"))
@@ -74,8 +75,8 @@ function M.init(network, callback)
 end
 
 ---Loads interstitial ads
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.load_interstitial(network, callback)
     if network.is_interstitial_loaded() then
         handle(callback, helper.success("Interstitial ads already loaded"))
@@ -85,15 +86,15 @@ function M.load_interstitial(network, callback)
 end
 
 ---Shows interstitial ads
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.show_interstitial(network, callback)
     network.show_interstitial(callback)
 end
 
 ---Loads rewarded ads
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.load_rewarded(network, callback)
     if network.is_rewarded_loaded() then
         handle(callback, helper.success("Rewarded ads already loaded"))
@@ -103,15 +104,15 @@ function M.load_rewarded(network, callback)
 end
 
 ---Shows rewarded ads
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.show_rewarded(network, callback)
     network.show_rewarded(callback)
 end
 
 ---Loads banner
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.load_banner(network, callback)
     if network.is_banner_loaded() then
         handle(callback, helper.success("Banner already loaded"))
@@ -121,8 +122,8 @@ function M.load_banner(network, callback)
 end
 
 ---Unloads banner
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.unload_banner(network, callback)
     if not network.is_banner_loaded() then
         handle(callback, helper.success("Banner already unloaded"))
@@ -132,8 +133,8 @@ function M.unload_banner(network, callback)
 end
 
 ---Checks if the required banner is shown and interrupts the queue if it shown.
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.is_banner_showed(network, callback)
     if banner_network and banner_network == network and banner_network.is_banner_showed() then
         handle(callback, helper.abort("The required banner has already been shown"))
@@ -143,8 +144,8 @@ function M.is_banner_showed(network, callback)
 end
 
 ---Hides banner
----@param network network banner network
----@param callback function callback accepting the response result
+---@param network ads_network banner network
+---@param callback ads_callback|nil callback accepting the response result
 function M.hide_network_banner(network, callback)
     if network and network.is_banner_showed() then
         network.hide_banner(callback)
@@ -155,6 +156,9 @@ function M.hide_network_banner(network, callback)
     end
 end
 
+---Show network banner
+---@param network ads_network
+---@param callback ads_callback|nil
 function M.show_network_banner(network, callback)
     network.show_banner(function(response)
         if response.result == events.SUCCESS then
@@ -165,8 +169,8 @@ function M.show_network_banner(network, callback)
 end
 
 ---Shows banner
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.show_banner(network, callback)
     if banner_network then
         M.hide_network_banner(banner_network, function(response)
@@ -179,14 +183,14 @@ function M.show_banner(network, callback)
 end
 
 ---Hides banner
----@param network network current network
----@param callback function callback accepting the response result
+---@param network ads_network current network
+---@param callback ads_callback|nil callback accepting the response result
 function M.hide_banner(network, callback)
     M.hide_network_banner(banner_network, callback)
 end
 
 ---Returns banners network
----@return network
+---@return ads_network
 function M.get_banner_network()
     return banner_network
 end

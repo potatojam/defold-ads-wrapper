@@ -1,12 +1,13 @@
-local M = { NAME = "unity" }
--- Extention: https://github.com/AGulev/DefVideoAds
-
 local ads = require("ads_wrapper.ads_wrapper")
 local platform = require("ads_wrapper.platform")
 local helper = require("ads_wrapper.ads_networks.helper")
 local events = require("ads_wrapper.events")
 
+local M = { NAME = "unity" }
+-- Extention: https://github.com/AGulev/DefVideoAds
+
 local parameters
+---@type ads_callback|nil
 local module_callback
 local is_ready = {}
 local banner_loaded = false
@@ -17,7 +18,7 @@ if unityads then
 end
 
 -- Call saved `module_callback` only once. Send result.
----@param result hash
+---@param result ads_response
 local function callback_once(result)
     if module_callback then
         local callback = module_callback
@@ -28,7 +29,7 @@ end
 
 ---Call callback in the second frame. Send result.
 ---It is necessary to use timer for the coroutine to continue.
----@param result hash
+---@param result ads_response
 local function callback_delay(callback, result)
     if callback then
         timer.delay(0, false, function()
@@ -172,17 +173,17 @@ function M.setup(params)
     end
     if ads.is_debug then
         if platform.is_same(platform.PL_IOS) or platform.is_same(platform.PL_ANDROID) then
-            parameters.ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" }
+            parameters.ids = { [platform.PL_ANDROID] = "1401815",[platform.PL_IOS] = "1425385" }
             parameters[ads.T_BANNER] = { id = "banner" } -- test unit for banners
-            parameters[ads.T_INTERSTITIAL] = "video" -- test unit for interstitial
+            parameters[ads.T_INTERSTITIAL] = "video"     -- test unit for interstitial
             parameters[ads.T_REWARDED] = "rewardedVideo" -- test unit for rewarded
         end
     end
-    is_ready = { [parameters[ads.T_INTERSTITIAL]] = false, [parameters[ads.T_REWARDED]] = false }
+    is_ready = { [parameters[ads.T_INTERSTITIAL]] = false,[parameters[ads.T_REWARDED]] = false }
 end
 
 ---Initializes `unityads` sdk.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.init(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -190,7 +191,7 @@ function M.init(callback)
 end
 
 ---Requests IDFA
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.request_idfa(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -210,7 +211,7 @@ function M.is_initialized()
 end
 
 ---Shows rewarded ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -218,7 +219,7 @@ function M.show_rewarded(callback)
 end
 
 ---Loads rewarded ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_rewarded(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -232,7 +233,7 @@ function M.is_rewarded_loaded()
 end
 
 ---Shows interstitial ads.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -240,7 +241,7 @@ function M.show_interstitial(callback)
 end
 
 ---Loads interstitial ads
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_interstitial(callback)
     module_callback = callback
     unityads.set_callback(unity_ads_callback)
@@ -260,7 +261,7 @@ function M.is_banner_setup()
 end
 
 ---Loads banner. Use `ads.T_BANNER` parameter.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.load_banner(callback)
     if not M.is_banner_setup() then
         callback_delay(callback, helper.error("UNITYADS: Banner not setup"))
@@ -272,7 +273,7 @@ function M.load_banner(callback)
 end
 
 ---Unloads active banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.unload_banner(callback)
     if M.is_banner_loaded() then
         banner_loaded = false
@@ -291,7 +292,7 @@ function M.is_banner_loaded()
 end
 
 ---Shows loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = true
@@ -303,7 +304,7 @@ function M.show_banner(callback)
 end
 
 ---Hides loaded banner.
----@param callback function the function is called after execution.
+---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
         banner_showed = false
@@ -324,7 +325,7 @@ end
 --- `unityads.BANNER_POSITION_BOTTOM_RIGHT`
 --- `unityads.BANNER_POSITION_CENTER`
 ---@param position number banner position
----@return table
+---@return ads_response
 function M.set_banner_position(position)
     if position or position == 0 then
         banner_configs.position = position
@@ -338,7 +339,7 @@ end
 
 ---Sets banner size. It is imperative to reload the banner again after this function.
 ---@param size table table `{width = number, height = number}`
----@return table
+---@return ads_response
 function M.set_banner_size(size)
     if not size then
         return helper.error("UNITYADS: Size must be given")
