@@ -367,6 +367,36 @@ local function init_yandex_mobile(self)
     end
 end
 
+local function init_game_distribution(self)
+    if platform.is_same(platform.PL_HTML5) then
+        ads_wrapper.clear_networks()
+
+        -- Need to add the extension: https://github.com/GameDistribution/gd-defold
+        local game_distribution = require("ads_wrapper.ads_networks.game_distribution")
+        local game_distribution_net_id = ads_wrapper.register_network(game_distribution, {
+            [ads_wrapper.T_BANNER] = {
+                auto_create = true,
+                size = game_distribution.SIZE_336x280,
+                parent_id = "canvas-container",
+                wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
+                ad_style = "margin-left: -50%; display: none;",
+                banner_id = "canvas-ad"
+            }
+        })
+
+        if game_distribution_net_id then
+            ads_wrapper.setup_video({ { id = game_distribution_net_id, count = 1 } })
+            ads_wrapper.setup_banner({ { id = game_distribution_net_id, count = 1 } })
+            print_log(self, "init_game_distribution", "Game Distribution Ads set up")
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_game_distribution", "Game Distribution Ads not support on this platform")
+        end
+    else
+        print_log(self, "init_game_distribution", "Game Distribution Ads not support on this platform")
+    end
+end
+
 ---Create a button and add it to the services table
 ---@param self userdata
 ---@param name string node functions
@@ -415,6 +445,7 @@ function init(self)
     create_service_button(self, "btn_init_vk", init_vk)
     create_service_button(self, "btn_init_applovin", init_applovin_max)
     create_service_button(self, "btn_init_yandex_mobile", init_yandex_mobile)
+    create_service_button(self, "btn_init_game_distribution", init_game_distribution)
 
     create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
     create_ads_button(self, "btn_show_interstitial", on_show_interstitial)

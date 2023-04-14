@@ -8,6 +8,7 @@
 * [Yandex Mobile Ads](#yandex-mobile-ads)
 * [Vk Bridge](#vk-bridge)
 * [Applovin Max](#applovin-max)
+* [GameDistribution](#gamedistribution)
 * [Admob and Unity Ads](#admob-and-unity-ads)
 
 ## Test Networks
@@ -237,6 +238,45 @@ You need to set:
 
         ads_wrapper.setup_video({{id = applovin_max_net_id, count = 1}}, 1)
         ads_wrapper.setup_banner({{id = applovin_max_net_id, count = 1}}, 1)
+```
+
+## GameDistribution
+
+The network uses [this](https://github.com/GameDistribution/gd-defold) extension.
+
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
+
+You need to set:
+* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+  * banner_id <kbd>string</kbd> _optional_ key for banner. Default `canvas-ad`.
+  * auto_create <kbd>boolean</kbd> _optional_ Automatically create a `div` element for the banner based on other parameters Default `false`.
+  * parent_id <kbd>string</kbd> _optional_ element id in which to place the banner. Default `canvas-container`.
+  * wrapper_style <kbd>string</kbd> _optional_ styles for the wrapper element. Default `position: absolute; bottom: 0px; left: 50%;`.
+  * ad_style <kbd>string</kbd> _optional_ styles for the banner element. Default `margin-left: -50%; display: none;`.
+  * size <kbd>number</kbd> _optional_ banner size. Default `game_distribution.SIZE_336x280`. Possible values:
+    * game_distribution.SIZE_336x280
+    * game_distribution.SIZE_300x250
+    * game_distribution.SIZE_970x250
+    * game_distribution.SIZE_728x90
+    * game_distribution.SIZE_120x600
+    * game_distribution.SIZE_160x600
+
+```lua
+    -- Need to add the extension: https://github.com/GameDistribution/gd-defold
+    local game_distribution = require("ads_wrapper.ads_networks.game_distribution")
+    local game_distribution_net_id = ads_wrapper.register_network(game_distribution, {
+        [ads_wrapper.T_BANNER] = {
+            auto_create = true,
+            size = game_distribution.SIZE_336x280,
+            parent_id = "canvas-container",
+            wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
+            ad_style = "margin-left: -50%; display: none;",
+            banner_id = "canvas-ad"
+        }
+    })
+
+    ads_wrapper.setup_video({ { id = game_distribution_net_id, count = 1 } })
+    ads_wrapper.setup_banner({ { id = game_distribution_net_id, count = 1 } })
 ```
 
 ## Admob and Unity Ads

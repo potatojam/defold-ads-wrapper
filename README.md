@@ -16,6 +16,7 @@ Supported services:
 * Yandex Mobile Ads
 * Vk Bridge
 * Applovin Max
+* GameDistribution
 
 Ads Wrapper also allows you to run multiple networks at the same time. For example Admob and Unity Ads.
 
@@ -493,6 +494,7 @@ More information can be found at the links:
 * [Vk Bridge](docs/networks.md#vk-bridge)
 * [Applovin Max](docs/networks.md#applovin-max)
 * [Admob and Unity Ads](docs/networks.md#admob-and-unity-ads)
+* [GameDistribution](docs/networks.md#gamedistribution)
 
 ## Network Creation
 

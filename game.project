@@ -16,7 +16,7 @@ package = com.defold.adswrapper
 
 [project]
 title = Ads Wrapper
-version = 1.1.4
+version = 1.2.0
 dependencies#0 = https://github.com/andsve/dirtylarry/archive/master.zip
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/0.7.0.zip
 dependencies#2 = https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.5.1.zip
@@ -40,4 +40,7 @@ ios_tracking_usage_description = Your data will be used to provide you a better 
 [applovin]
 sdk_key_android = YOUR_SDK_KEY_HERE
 admob_appid_android = ca-app-pub-3940256099942544~3347511713
+
+[gamedistribution]
+game_id = 89e203558856497e876a43ea86f3bfbb
 
