@@ -253,6 +253,7 @@ You need to set:
   * parent_id <kbd>string</kbd> _optional_ element id in which to place the banner. Default `canvas-container`.
   * wrapper_style <kbd>string</kbd> _optional_ styles for the wrapper element. Default `position: absolute; bottom: 0px; left: 50%;`.
   * ad_style <kbd>string</kbd> _optional_ styles for the banner element. Default `margin-left: -50%; display: none;`.
+  * wrapper_display <kbd>string</kbd> _optional_ wrapper `display` style when banners are shown. Not set by default
   * size <kbd>number</kbd> _optional_ banner size. Default `game_distribution.SIZE_336x280`. Possible values:
     * game_distribution.SIZE_336x280
     * game_distribution.SIZE_300x250

@@ -104,7 +104,12 @@ end
 local function create_banner(settings)
     if settings then
         settings.banner_id = settings.banner_id or banner_default.banner_id
-        banner_ids[#banner_ids + 1] = settings.banner_id
+        local baner_data = {
+            id = settings.banner_id,
+            wrapper_display = settings.wrapper_display,
+            wrapper_id = string.format("wr-%s", settings.banner_id)
+        }
+        banner_ids[#banner_ids + 1] = baner_data
         if settings.auto_create then
             settings.size = settings.size or banner_default.size
             settings.parent_id = settings.parent_id or banner_default.parent_id
@@ -113,6 +118,7 @@ local function create_banner(settings)
             html5.run(
                 string.format("var canvasContainer = document.getElementById('%s');", settings.parent_id) ..
                 "var div = document.createElement('div');" ..
+                string.format("div.id = '%s';", baner_data.wrapper_id) ..
                 "canvasContainer.appendChild(div);" ..
                 string.format("div.style = '%s';", settings.wrapper_style) ..
                 "var ads_div = document.createElement('div');" ..
@@ -242,8 +248,14 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
-        for key, banner_id in pairs(banner_ids) do
-            gdsdk.show_display_ad(banner_id)
+        for key, banner in pairs(banner_ids) do
+            gdsdk.show_display_ad(banner.id)
+            if banner.wrapper_display then
+                html5.run(
+                    string.format("var div = document.getElementById('%s');", banner.wrapper_id) ..
+                    string.format("div.style.display = '%s';", banner.wrapper_display)
+                )
+            end
         end
         banner_showed = true
         callback_delay(callback, helper.success())
@@ -256,8 +268,14 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
-        for key, banner_id in pairs(banner_ids) do
-            gdsdk.hide_display_ad(banner_id)
+        for key, banner in pairs(banner_ids) do
+            gdsdk.hide_display_ad(banner.id)
+            if banner.wrapper_display then
+                html5.run(
+                    string.format("var div = document.getElementById('%s');", banner.wrapper_id) ..
+                    string.format("div.style.display = '%s';", "none")
+                )
+            end
         end
         banner_showed = false
         callback_delay(callback, helper.success())
