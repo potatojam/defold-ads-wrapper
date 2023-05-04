@@ -19,7 +19,8 @@ local banner_showed     = false
 local rewarded_showed   = false
 local is_gd_initialized = false
 local is_reward_get     = false
-local banner_configs    = {
+local banner_ids        = {}
+local banner_default    = {
     size = M.SIZE_336x280,
     parent_id = "canvas-container",
     wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
@@ -100,38 +101,41 @@ local function gdsdk_listener(self, message_id, message)
     end
 end
 
+local function create_banner(settings)
+    if settings then
+        settings.banner_id = settings.banner_id or banner_default.banner_id
+        banner_ids[#banner_ids + 1] = settings.banner_id
+        if settings.auto_create then
+            settings.size = settings.size or banner_default.size
+            settings.parent_id = settings.parent_id or banner_default.parent_id
+            settings.wrapper_style = settings.wrapper_style or banner_default.wrapper_style
+            settings.ad_style = settings.ad_style or banner_default.ad_style
+            html5.run(
+                string.format("var canvasContainer = document.getElementById('%s');", settings.parent_id) ..
+                "var div = document.createElement('div');" ..
+                "canvasContainer.appendChild(div);" ..
+                string.format("div.style = '%s';", settings.wrapper_style) ..
+                "var ads_div = document.createElement('div');" ..
+                "div.appendChild(ads_div);" ..
+                string.format("ads_div.style = '%s %s';", settings.ad_style, get_size_string(settings.size)) ..
+                string.format("ads_div.id = '%s';", settings.banner_id)
+            )
+        end
+    end
+end
+
 ---Api setup
 ---@param params table
 function M.setup(params)
     parameters = params
     local banner_settings = parameters[ads.T_BANNER]
     if banner_settings then
-        if banner_settings.banner_id then
-            banner_configs.banner_id = banner_settings.banner_id
-        end
-        if banner_settings.auto_create then
-            if banner_settings.size then
-                banner_configs.size = banner_settings.size
+        if #banner_settings > 0 then
+            for key, settings in pairs(banner_settings) do
+                create_banner(settings)
             end
-            if banner_settings.parent_id then
-                banner_configs.parent_id = banner_settings.parent_id
-            end
-            if banner_settings.wrapper_style then
-                banner_configs.wrapper_style = banner_settings.wrapper_style
-            end
-            if banner_settings.ad_style then
-                banner_configs.ad_style = banner_settings.ad_style
-            end
-            html5.run(
-                string.format("var canvasContainer = document.getElementById('%s');", banner_configs.parent_id) ..
-                "var div = document.createElement('div');" ..
-                "canvasContainer.appendChild(div);" ..
-                string.format("div.style = '%s';", banner_configs.wrapper_style) ..
-                "var ads_div = document.createElement('div');" ..
-                "div.appendChild(ads_div);" ..
-                string.format("ads_div.style = '%s %s';", banner_configs.ad_style, get_size_string(banner_settings.size)) ..
-                string.format("ads_div.id = '%s';", banner_configs.banner_id)
-            )
+        else
+            create_banner(banner_settings)
         end
     end
 end
@@ -203,7 +207,7 @@ end
 ---Check if the banner is set up
 ---@return boolean
 function M.is_banner_setup()
-    return banner_configs.banner_id ~= nil
+    return #banner_ids > 0
 end
 
 ---Loads banner
@@ -238,7 +242,9 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.show_banner(callback)
     if M.is_banner_loaded() then
-        gdsdk.show_display_ad(banner_configs.banner_id)
+        for key, banner_id in pairs(banner_ids) do
+            gdsdk.show_display_ad(banner_id)
+        end
         banner_showed = true
         callback_delay(callback, helper.success())
     else
@@ -250,7 +256,9 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_loaded() then
-        gdsdk.hide_display_ad(banner_configs.banner_id)
+        for key, banner_id in pairs(banner_ids) do
+            gdsdk.hide_display_ad(banner_id)
+        end
         banner_showed = false
         callback_delay(callback, helper.success())
     else

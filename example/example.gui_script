@@ -200,7 +200,7 @@ local function init_mobiles(self)
         -- Need to add the extension: https://github.com/AGulev/DefVideoAds/archive/refs/tags/4.5.1.zip
         local unity = require("ads_wrapper.ads_networks.unity")
         local unity_net_id = ads_wrapper.register_network(unity, {
-            ids = { [platform.PL_ANDROID] = "1401815",[platform.PL_IOS] = "1425385" },
+            ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" },
             [ads_wrapper.T_REWARDED] = "rewardedVideo",
             [ads_wrapper.T_INTERSTITIAL] = "video",
             [ads_wrapper.T_BANNER] = { id = "banner", size = { width = 720, height = 90 }, position = unityads.BANNER_POSITION_BOTTOM_RIGHT }
@@ -375,12 +375,22 @@ local function init_game_distribution(self)
         local game_distribution = require("ads_wrapper.ads_networks.game_distribution")
         local game_distribution_net_id = ads_wrapper.register_network(game_distribution, {
             [ads_wrapper.T_BANNER] = {
-                auto_create = true,
-                size = game_distribution.SIZE_336x280,
-                parent_id = "canvas-container",
-                wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
-                ad_style = "margin-left: -50%; display: none;",
-                banner_id = "canvas-ad"
+                {
+                    auto_create = true,
+                    size = game_distribution.SIZE_336x280,
+                    parent_id = "canvas-container",
+                    wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
+                    ad_style = "margin-left: -50%; display: none;",
+                    banner_id = "canvas-ad1"
+                },
+                {
+                    auto_create = true,
+                    size = game_distribution.SIZE_336x280,
+                    parent_id = "canvas-container",
+                    wrapper_style = "position: absolute; bottom: 30vh; left: 50%;",
+                    ad_style = "margin-left: -50%; display: none;",
+                    banner_id = "canvas-ad2"
+                }
             }
         })
 

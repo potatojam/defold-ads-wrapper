@@ -247,7 +247,7 @@ The network uses [this](https://github.com/GameDistribution/gd-defold) extension
 > &#x26a0;&#xfe0f; Don't forget to add settings to game.project
 
 You need to set:
-* [ads_wrapper.T_BANNER] <kbd>table</kbd> _optional_ banner options
+* [ads_wrapper.T_BANNER] <kbd>table|table[]</kbd> _optional_ banner options
   * banner_id <kbd>string</kbd> _optional_ key for banner. Default `canvas-ad`.
   * auto_create <kbd>boolean</kbd> _optional_ Automatically create a `div` element for the banner based on other parameters Default `false`.
   * parent_id <kbd>string</kbd> _optional_ element id in which to place the banner. Default `canvas-container`.
@@ -260,6 +260,7 @@ You need to set:
     * game_distribution.SIZE_728x90
     * game_distribution.SIZE_120x600
     * game_distribution.SIZE_160x600
+You can create multiple banners that will be displayed at the same time. You just need to send an array with the configurations indicated above.
 
 ```lua
     -- Need to add the extension: https://github.com/GameDistribution/gd-defold
