@@ -249,12 +249,14 @@ The network uses [this](https://github.com/GameDistribution/gd-defold) extension
 You need to set:
 * [ads_wrapper.T_BANNER] <kbd>table|table[]</kbd> _optional_ banner options
   * banner_id <kbd>string</kbd> _optional_ key for banner. Default `canvas-ad`.
+  * ad_style <kbd>string</kbd> _optional_ styles for the banner element. Default `margin-left: -50%; display: none;`.
   * auto_create <kbd>boolean</kbd> _optional_ Automatically create a `div` element for the banner based on other parameters Default `false`.
   * parent_id <kbd>string</kbd> _optional_ element id in which to place the banner. Default `canvas-container`.
+  * wrapper_id <kbd>string</kbd> _optional_ Id for the wrapper in which the banner element will be inserted
   * wrapper_style <kbd>string</kbd> _optional_ styles for the wrapper element. Default `position: absolute; bottom: 0px; left: 50%;`.
-  * ad_style <kbd>string</kbd> _optional_ styles for the banner element. Default `margin-left: -50%; display: none;`.
   * wrapper_display <kbd>string</kbd> _optional_ wrapper `display` style when banners are shown. Not set by default
   * size <kbd>number</kbd> _optional_ banner size. Default `game_distribution.SIZE_336x280`. Possible values:
+    * game_distribution.SIZE_NONE
     * game_distribution.SIZE_336x280
     * game_distribution.SIZE_300x250
     * game_distribution.SIZE_970x250
@@ -269,11 +271,13 @@ You can create multiple banners that will be displayed at the same time. You jus
     local game_distribution_net_id = ads_wrapper.register_network(game_distribution, {
         [ads_wrapper.T_BANNER] = {
             auto_create = true,
-            size = game_distribution.SIZE_336x280,
+            size = game_distribution.SIZE_NONE,
             parent_id = "canvas-container",
-            wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
-            ad_style = "margin-left: -50%; display: none;",
-            banner_id = "canvas-ad"
+            wrapper_id = "wr-canvas-ad-bot",
+            wrapper_style = "position: absolute; top: 50vh; left: 0px; width: 100%; height: 50%; display: none;align-items: center;justify-content: center;overflow: hidden;flex-direction:column;",
+            ad_style = "width: 100%; height: 100%;",
+            banner_id = "canvas-ad-bot",
+            wrapper_display = "flex"
         }
     })
 

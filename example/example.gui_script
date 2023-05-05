@@ -377,23 +377,21 @@ local function init_game_distribution(self)
             [ads_wrapper.T_BANNER] = {
                 {
                     auto_create = true,
-                    size = game_distribution.SIZE_336x280,
+                    size = game_distribution.SIZE_NONE,
                     parent_id = "canvas-container",
+                    wrapper_id = "wr-canvas-ad-bot",
                     wrapper_style =
-                    "position: absolute; top: 50vh; left: 0px; width: 100%; height: 25vh; display: flex;align-items: center;justify-content: center;overflow: hidden;",
-                    ad_style = "display: none;",
+                    "position: absolute; top: 50vh; left: 0px; width: 100%; height: 50%; display: none;align-items: center;justify-content: center;overflow: hidden;flex-direction:column;",
+                    ad_style = "width: 100%; height: 50%;",
                     banner_id = "canvas-ad-bot",
                     wrapper_display = "flex"
                 },
                 {
                     auto_create = true,
-                    size = game_distribution.SIZE_336x280,
-                    parent_id = "canvas-container",
-                    wrapper_style =
-                    "position: absolute; top: 75vh; left: 0px; width: 100%; height: 25vh; display: flex;align-items: center;justify-content: center;overflow: hidden;",
-                    ad_style = " display: none;",
-                    banner_id = "canvas-ad-top",
-                    wrapper_display = "flex"
+                    size = game_distribution.SIZE_NONE,
+                    parent_id = "wr-canvas-ad-bot",
+                    ad_style = "width: 100%; height: 50%;",
+                    banner_id = "canvas-ad-top"
                 }
             }
         })

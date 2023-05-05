@@ -5,6 +5,7 @@ local helper            = require("ads_wrapper.ads_networks.helper")
 local M                 = { NAME = "game_distribution" }
 -- Extention: https://github.com/GameDistribution/gd-defold
 
+M.SIZE_NONE             = 0
 M.SIZE_336x280          = 1
 M.SIZE_300x250          = 2
 M.SIZE_970x250          = 3
@@ -107,7 +108,7 @@ local function create_banner(settings)
         local baner_data = {
             id = settings.banner_id,
             wrapper_display = settings.wrapper_display,
-            wrapper_id = string.format("wr-%s", settings.banner_id)
+            wrapper_id = settings.wrapper_id
         }
         banner_ids[#banner_ids + 1] = baner_data
         if settings.auto_create then
@@ -115,17 +116,26 @@ local function create_banner(settings)
             settings.parent_id = settings.parent_id or banner_default.parent_id
             settings.wrapper_style = settings.wrapper_style or banner_default.wrapper_style
             settings.ad_style = settings.ad_style or banner_default.ad_style
-            html5.run(
-                string.format("var canvasContainer = document.getElementById('%s');", settings.parent_id) ..
-                "var div = document.createElement('div');" ..
-                string.format("div.id = '%s';", baner_data.wrapper_id) ..
-                "canvasContainer.appendChild(div);" ..
-                string.format("div.style = '%s';", settings.wrapper_style) ..
+
+            local code = string.format("var canvasContainer = document.getElementById('%s');", settings.parent_id)
+            if settings.wrapper_id then
+                code = code .. "var div = document.createElement('div');" ..
+                    string.format("div.id = '%s';", settings.wrapper_id) ..
+                    "canvasContainer.appendChild(div);" ..
+                    string.format("div.style = '%s';", settings.wrapper_style)
+            else
+                code = code .. "var div = canvasContainer;"
+            end
+            code = code ..
                 "var ads_div = document.createElement('div');" ..
-                "div.appendChild(ads_div);" ..
-                string.format("ads_div.style = '%s %s';", settings.ad_style, get_size_string(settings.size)) ..
-                string.format("ads_div.id = '%s';", settings.banner_id)
-            )
+                "div.appendChild(ads_div);"
+            if settings.size ~= M.SIZE_NONE then
+                code = code .. string.format("ads_div.style = '%s %s';", settings.ad_style, get_size_string(settings.size))
+            else
+                code = code .. string.format("ads_div.style = '%s';", settings.ad_style)
+            end
+            code = code .. string.format("ads_div.id = '%s';", settings.banner_id)
+            html5.run(code)
         end
     end
 end
