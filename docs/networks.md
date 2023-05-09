@@ -264,6 +264,7 @@ You need to set:
     * game_distribution.SIZE_120x600
     * game_distribution.SIZE_160x600
 You can create multiple banners that will be displayed at the same time. You just need to send an array with the configurations indicated above.
+* [game_distribution.LISTENER] <kbd>function(self, message_id, message)</kbd> _optional_ You can set a listener that will receive all messages from GD
 
 ```lua
     -- Need to add the extension: https://github.com/GameDistribution/gd-defold

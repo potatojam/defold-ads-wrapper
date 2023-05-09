@@ -1,33 +1,36 @@
-local ads               = require("ads_wrapper.ads_wrapper")
-local platform          = require("ads_wrapper.platform")
-local helper            = require("ads_wrapper.ads_networks.helper")
+local ads = require("ads_wrapper.ads_wrapper")
+local platform = require("ads_wrapper.platform")
+local helper = require("ads_wrapper.ads_networks.helper")
 
-local M                 = { NAME = "game_distribution" }
+local M = { NAME = "game_distribution" }
 -- Extention: https://github.com/GameDistribution/gd-defold
 
-M.SIZE_NONE             = 0
-M.SIZE_336x280          = 1
-M.SIZE_300x250          = 2
-M.SIZE_970x250          = 3
-M.SIZE_728x90           = 4
-M.SIZE_120x600          = 5
-M.SIZE_160x600          = 6
+M.LISTENER = hash("listener")
+
+M.SIZE_NONE = 0
+M.SIZE_336x280 = 1
+M.SIZE_300x250 = 2
+M.SIZE_970x250 = 3
+M.SIZE_728x90 = 4
+M.SIZE_120x600 = 5
+M.SIZE_160x600 = 6
 
 local parameters
 ---@type ads_callback|nil
 local module_callback
-local banner_showed     = false
-local rewarded_showed   = false
+local banner_showed = false
+local rewarded_showed = false
 local is_gd_initialized = false
-local is_reward_get     = false
-local banner_ids        = {}
-local banner_default    = {
+local is_reward_get = false
+local banner_ids = {}
+local banner_default = {
     size = M.SIZE_336x280,
     parent_id = "canvas-container",
     wrapper_style = "position: absolute; bottom: 0px; left: 50%;",
     ad_style = "margin-left: -50%; display: none;",
     banner_id = "canvas-ad"
 }
+local listener = nil
 
 local function get_size_string(size)
     local w = 336
@@ -100,6 +103,9 @@ local function gdsdk_listener(self, message_id, message)
     elseif message_id == gdsdk.SDK_REWARDED_WATCH_COMPLETE then
         is_reward_get = true
     end
+    if listener then
+        listener(self, message_id, message)
+    end
 end
 
 local function create_banner(settings)
@@ -154,6 +160,7 @@ function M.setup(params)
             create_banner(banner_settings)
         end
     end
+    listener = parameters[M.LISTENER]
 end
 
 ---Initializes `GameDistribution` sdk.
