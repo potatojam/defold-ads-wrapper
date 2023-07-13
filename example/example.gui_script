@@ -409,6 +409,39 @@ local function init_game_distribution(self)
     end
 end
 
+local function init_ironsource(self)
+    if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
+        ads_wrapper.clear_networks()
+
+        -- Need to add the extension: https://github.com/osov/defold-yandex-sdk-ads/releases/download/1.0/defold-yandex-sdk-ads.zip
+        local ironsource = require("ads_wrapper.ads_networks.ironsource")
+        ---@type ironsource_params
+        local params = {
+            user_id = "UserID",
+            consent_GDPR = true,
+            adapters_debug = true,
+            metadata = { ["is_test_suite"] = "enable" }
+        }
+        if platform.is_same(platform.PL_ANDROID) then
+            params.app_key = "19bfef645"
+        else
+            params.app_key = "1a349ce5d"
+        end
+
+        local ironsource_net_id = ads_wrapper.register_network(ironsource, params)
+
+        if ironsource_net_id then
+            ads_wrapper.setup_video({ { id = ironsource_net_id, count = 1 } })
+            print_log(self, "init_ironsource", "Ironsource Ads set up")
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_ironsource", "Ironsource Ads not support on this platform")
+        end
+    else
+        print_log(self, "init_ironsource", "Ironsource Ads not support on this platform")
+    end
+end
+
 ---Create a button and add it to the services table
 ---@param self userdata
 ---@param name string node functions
@@ -458,6 +491,7 @@ function init(self)
     create_service_button(self, "btn_init_applovin", init_applovin_max)
     create_service_button(self, "btn_init_yandex_mobile", init_yandex_mobile)
     create_service_button(self, "btn_init_game_distribution", init_game_distribution)
+    create_service_button(self, "btn_init_ironsource", init_ironsource)
 
     create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
     create_ads_button(self, "btn_show_interstitial", on_show_interstitial)
