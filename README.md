@@ -496,7 +496,7 @@ More information can be found at the links:
 * [Applovin Max](docs/networks.md#applovin-max)
 * [Admob and Unity Ads](docs/networks.md#admob-and-unity-ads)
 * [GameDistribution](docs/networks.md#gamedistribution)
-* [IronSource](docs/networks.md##ironsource)
+* [IronSource](docs/networks.md#ironsource)
 
 ## Network Creation
 
