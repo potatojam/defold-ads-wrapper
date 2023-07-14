@@ -413,22 +413,15 @@ local function init_ironsource(self)
     if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
         ads_wrapper.clear_networks()
 
-        -- Need to add the extension: https://github.com/osov/defold-yandex-sdk-ads/releases/download/1.0/defold-yandex-sdk-ads.zip
+        -- Need to add the extension: https://github.com/defold/extension-ironsource/archive/refs/heads/main.zip
         local ironsource = require("ads_wrapper.ads_networks.ironsource")
-        ---@type ironsource_params
-        local params = {
+        local ironsource_net_id = ads_wrapper.register_network(ironsource, {
             user_id = "UserID",
             consent_GDPR = true,
             adapters_debug = true,
-            metadata = { ["is_test_suite"] = "enable" }
-        }
-        if platform.is_same(platform.PL_ANDROID) then
-            params.app_key = "19bfef645"
-        else
-            params.app_key = "1a349ce5d"
-        end
-
-        local ironsource_net_id = ads_wrapper.register_network(ironsource, params)
+            metadata = { ["is_test_suite"] = "enable" },
+            app_key = { [platform.PL_ANDROID] = "19bfef645", [platform.PL_IOS] = "1a349ce5d" }
+        })
 
         if ironsource_net_id then
             ads_wrapper.setup_video({ { id = ironsource_net_id, count = 1 } })
@@ -512,6 +505,7 @@ function init(self)
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     init_test(self)
     show_services_buttons(self)
+    ---TODO: return to game project old networks
 end
 
 function update(self, dt)

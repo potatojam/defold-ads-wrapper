@@ -1,4 +1,5 @@
 local helper = require("ads_wrapper.ads_networks.helper")
+local platform = require("ads_wrapper.platform")
 
 local M = { NAME = "ironsource" }
 -- Extention: https://github.com/defold/extension-ironsource
@@ -8,7 +9,7 @@ local M = { NAME = "ironsource" }
 ---@field consent_GDPR boolean|nil
 ---@field adapters_debug boolean|nil
 ---@field metadata table<string, any>|nil
----@field app_key string|nil
+---@field app_key table<userdata, string>
 ---@field rew_placement_name string|nil
 ---@field int_placement_name string|nil
 
@@ -85,10 +86,10 @@ local function ironsource_callback(self, message_id, message)
         end
     elseif message_id == ironsource.MSG_REWARDED then
         if message.event == ironsource.EVENT_AD_AVAILABLE then
-            ---Loaded
+            ---Loaded--Called after init
             -- callback_once(helper.success(nil, message))
         elseif message.event == ironsource.EVENT_AD_UNAVAILABLE then
-            ---Not loaded
+            ---Not loaded--Called before close
             -- callback_once(helper.error("IRONSOURCE: EVENT_AD_UNAVAILABLE", nil, message))
         elseif message.event == ironsource.EVENT_AD_OPENED then
             -- The Rewarded Video ad view has opened. Your activity will loose focus
@@ -176,13 +177,13 @@ end
 ---@param params ironsource_params
 function M.setup(params)
     parameters = params
-    if parameters.user_id then
+    if parameters.user_id ~= nil then
         ironsource.set_user_id(parameters.user_id)
     end
-    if parameters.consent_GDPR then
+    if parameters.consent_GDPR ~= nil then
         ironsource.set_consent(parameters.consent_GDPR)
     end
-    if parameters.adapters_debug then
+    if parameters.adapters_debug ~= nil then
         ironsource.set_adapters_debug(parameters.adapters_debug)
     end
     if parameters.metadata then
@@ -198,7 +199,7 @@ end
 function M.init(callback)
     module_callback = callback
     ironsource.set_callback(ironsource_callback)
-    ironsource.init(parameters.app_key)
+    ironsource.init(parameters.app_key[platform.get()])
 end
 
 ---Check if the environment supports ironsource api
