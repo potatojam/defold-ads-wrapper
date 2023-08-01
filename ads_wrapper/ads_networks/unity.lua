@@ -173,13 +173,13 @@ function M.setup(params)
     end
     if ads.is_debug then
         if platform.is_same(platform.PL_IOS) or platform.is_same(platform.PL_ANDROID) then
-            parameters.ids = { [platform.PL_ANDROID] = "1401815",[platform.PL_IOS] = "1425385" }
+            parameters.ids = { [platform.PL_ANDROID] = "1401815", [platform.PL_IOS] = "1425385" }
             parameters[ads.T_BANNER] = { id = "banner" } -- test unit for banners
             parameters[ads.T_INTERSTITIAL] = "video"     -- test unit for interstitial
             parameters[ads.T_REWARDED] = "rewardedVideo" -- test unit for rewarded
         end
     end
-    is_ready = { [parameters[ads.T_INTERSTITIAL]] = false,[parameters[ads.T_REWARDED]] = false }
+    is_ready = { [parameters[ads.T_INTERSTITIAL]] = false, [parameters[ads.T_REWARDED]] = false }
 end
 
 ---Initializes `unityads` sdk.

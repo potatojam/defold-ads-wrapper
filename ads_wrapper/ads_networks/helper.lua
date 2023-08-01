@@ -32,13 +32,17 @@ end
 
 ---Creates response `{result = events.SUCCESS, code = events.C_SKIPPED, message = message}`
 ---@param message? string|nil help info
+---@param data? any|nil
 ---@return ads_response
-function M.skipped(message)
+function M.skipped(message, data)
     local response = {}
     response.result = events.SUCCESS
     response.code = events.C_SKIPPED
     if message ~= nil then
         response.message = message
+    end
+    if data ~= nil then
+        response.data = data
     end
     return response
 end
@@ -46,13 +50,17 @@ end
 ---Creates response `{result = events.ERROR, code = code, message = message}`
 ---@param message? string|nil error message
 ---@param code? any|nil error code. Default `events.C_ERROR_UNKNOWN`
+---@param data? any|nil
 ---@return ads_response
-function M.error(message, code)
+function M.error(message, code, data)
     local response = {}
     response.result = events.ERROR
     response.code = code or events.C_ERROR_UNKNOWN
     if message ~= nil then
         response.message = message
+    end
+    if data ~= nil then
+        response.data = data
     end
     return response
 end

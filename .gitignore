@@ -11,3 +11,4 @@ builtins
 /.defold-api
 /.vscode
 /_build
+/extension-ironsource

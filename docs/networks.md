@@ -9,6 +9,7 @@
 * [Vk Bridge](#vk-bridge)
 * [Applovin Max](#applovin-max)
 * [GameDistribution](#gamedistribution)
+* [IronSource](#ironsource)
 * [Admob and Unity Ads](#admob-and-unity-ads)
 
 ## Test Networks
@@ -284,6 +285,34 @@ You can create multiple banners that will be displayed at the same time. You jus
 
     ads_wrapper.setup_video({ { id = game_distribution_net_id, count = 1 } })
     ads_wrapper.setup_banner({ { id = game_distribution_net_id, count = 1 } })
+```
+
+## IronSource
+
+The network uses [this](https://github.com/defold/extension-ironsource) extension.
+
+> &#x26a0;&#xfe0f; Don't forget to add settings to game.project
+
+You need to set:
+* app_key <kbd>table</kbd> _required_ 
+  * [platform.PL_ANDROID] <kbd>string</kbd> key for android
+  * [platform.PL_IOS] <kbd>string</kbd> key for ios
+* user_id <kbd>string</kbd> _optional_
+* consent_GDPR <kbd>boolean</kbd> _optional_ Here you need to indicate whether the user has given permission for the GDPR
+* adapters_debug <kbd>boolean</kbd> _optional_
+* metadata <kbd>table<string, string></kbd> _optional_ You can add the necessary metadata
+
+```lua
+    -- Need to add the extension: https://github.com/defold/extension-ironsource
+        local ironsource = require("ads_wrapper.ads_networks.ironsource")
+        local ironsource_net_id = ads_wrapper.register_network(ironsource, {
+            user_id = "UserID",
+            consent_GDPR = true,
+            adapters_debug = true,
+            metadata = { ["is_test_suite"] = "enable" },
+            app_key = { [platform.PL_ANDROID] = "YOUR_ANDROID_KEY", [platform.PL_IOS] = "YOUR_IOS_KEY" }
+        })
+        ads_wrapper.setup_video({ { id = ironsource_net_id, count = 1 } })
 ```
 
 ## Admob and Unity Ads

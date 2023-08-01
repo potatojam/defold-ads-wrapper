@@ -409,6 +409,32 @@ local function init_game_distribution(self)
     end
 end
 
+local function init_ironsource(self)
+    if platform.is_same(platform.PL_ANDROID) or platform.is_same(platform.PL_IOS) then
+        ads_wrapper.clear_networks()
+
+        -- Need to add the extension: https://github.com/defold/extension-ironsource/archive/refs/heads/main.zip
+        local ironsource = require("ads_wrapper.ads_networks.ironsource")
+        local ironsource_net_id = ads_wrapper.register_network(ironsource, {
+            user_id = "UserID",
+            consent_GDPR = true,
+            adapters_debug = true,
+            metadata = { ["is_test_suite"] = "enable" },
+            app_key = { [platform.PL_ANDROID] = "19bfef645", [platform.PL_IOS] = "1a349ce5d" }
+        })
+
+        if ironsource_net_id then
+            ads_wrapper.setup_video({ { id = ironsource_net_id, count = 1 } })
+            print_log(self, "init_ironsource", "Ironsource Ads set up")
+            show_ads_buttons(self)
+        else
+            print_log(self, "init_ironsource", "Ironsource Ads not support on this platform")
+        end
+    else
+        print_log(self, "init_ironsource", "Ironsource Ads not support on this platform")
+    end
+end
+
 ---Create a button and add it to the services table
 ---@param self userdata
 ---@param name string node functions
@@ -458,6 +484,7 @@ function init(self)
     create_service_button(self, "btn_init_applovin", init_applovin_max)
     create_service_button(self, "btn_init_yandex_mobile", init_yandex_mobile)
     create_service_button(self, "btn_init_game_distribution", init_game_distribution)
+    create_service_button(self, "btn_init_ironsource", init_ironsource)
 
     create_ads_button(self, "btn_load_interstitial", on_load_interstitial)
     create_ads_button(self, "btn_show_interstitial", on_show_interstitial)
@@ -478,6 +505,7 @@ function init(self)
     print_log(self, "init", "version: " .. sys.get_config("project.version"))
     init_test(self)
     show_services_buttons(self)
+    ---TODO: return to game project old networks
 end
 
 function update(self, dt)

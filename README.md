@@ -17,6 +17,7 @@ Supported services:
 * Vk Bridge
 * Applovin Max
 * GameDistribution
+* IronSource
 
 Ads Wrapper also allows you to run multiple networks at the same time. For example Admob and Unity Ads.
 
@@ -495,6 +496,7 @@ More information can be found at the links:
 * [Applovin Max](docs/networks.md#applovin-max)
 * [Admob and Unity Ads](docs/networks.md#admob-and-unity-ads)
 * [GameDistribution](docs/networks.md#gamedistribution)
+* [IronSource](docs/networks.md#ironsource)
 
 ## Network Creation
 
