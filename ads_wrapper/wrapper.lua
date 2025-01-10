@@ -144,7 +144,7 @@ function M.is_banner_showed(network, callback)
 end
 
 ---Hides banner
----@param network ads_network banner network
+---@param network ads_network|nil banner network
 ---@param callback ads_callback|nil callback accepting the response result
 function M.hide_network_banner(network, callback)
     if network and network.is_banner_showed() then
@@ -152,7 +152,7 @@ function M.hide_network_banner(network, callback)
         ---TODO QUESTION: need to clean the network in case of failure
         M.clear_banner_network()
     else
-        handle(callback, helper.success("Banner already hided"))
+        handle(callback, helper.success("Banner already hidden"))
     end
 end
 
@@ -190,7 +190,7 @@ function M.hide_banner(network, callback)
 end
 
 ---Returns banners network
----@return ads_network
+---@return ads_network|nil
 function M.get_banner_network()
     return banner_network
 end

@@ -18,6 +18,9 @@
 ---@field message string|nil
 ---@field data any|nil
 ---@field code hash|nil
+---@field cancelled boolean|nil
+---@field name string|nil
+---@field network_name string|nil
 
 ---@alias ads_callback fun(response: ads_response)
 

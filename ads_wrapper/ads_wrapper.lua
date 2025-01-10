@@ -26,7 +26,7 @@ local networks = {}
 local queues = {}
 local initialized = false
 local banner_auto_hide = false
-local banner_hided = true
+local banner_hidden = true
 
 ---Handler for error when mediator isn't setup
 ---@param name string mediator name
@@ -180,10 +180,10 @@ function M.setup_banner(order, repeat_count, _banner_auto_hide)
 end
 
 ---Initializes all networks.
----@param initilize_video boolean|nil check if need to initialize video networks
----@param initilize_banner boolean|nil check if need to initialize banner networks
+---@param initialize_video boolean|nil check if need to initialize video networks
+---@param initialize_banner boolean|nil check if need to initialize banner networks
 ---@param callback ads_callback|nil the function is called after execution.
-function M.init(initilize_video, initilize_banner, callback)
+function M.init(initialize_video, initialize_banner, callback)
     if M.is_initialized() then
         handle(callback, helper.success("Ads Wrapper already initialized"))
         return
@@ -199,16 +199,16 @@ function M.init(initilize_video, initilize_banner, callback)
     queues.hide_banner = create_hide_banner()
     queues.show_banner = create_show_banner()
 
-    if initilize_video or initilize_banner then
+    if initialize_video or initialize_banner then
         local init_mediator = mediator.create_mediator()
-        if initilize_video and video_mediator then
+        if initialize_video and video_mediator then
             mediator.add_networks(init_mediator, video_mediator)
         end
-        if initilize_banner and banner_mediator then
+        if initialize_banner and banner_mediator then
             mediator.add_networks(init_mediator, banner_mediator)
         end
-        mediator.call_all(init_mediator, queues.init, function(resonse)
-            handle(callback, helper.success("Tryed to initialize networks", resonse))
+        mediator.call_all(init_mediator, queues.init, function(response)
+            handle(callback, helper.success("Tried to initialize networks", response))
         end)
     else
         handle(callback, helper.success("Ads Wrapper initialized without networks"))
@@ -300,9 +300,9 @@ end
 ---@return integer|nil
 function M.show_banner(callback)
     if M.is_banner_setup() then
-        banner_hided = false
+        banner_hidden = false
         return mediator.call(banner_mediator, queues.show_banner, function(response)
-            if banner_auto_hide and banner_hided then
+            if banner_auto_hide and banner_hidden then
                 M.hide_banner()
             end
             handle(callback, response)
@@ -317,7 +317,7 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.hide_banner(callback)
     if M.is_banner_setup() then
-        banner_hided = true
+        banner_hidden = true
         mediator.call_current(banner_mediator, queues.hide_banner, callback)
     else
         mediator_error(BANNER, callback)
@@ -373,7 +373,7 @@ function M.is_rewarded_loaded(check_current)
         return false
     end
     local network = check_current and mediator.get_current_network(video_mediator) or mediator.get_next_network(video_mediator, true)
-    return network and network.is_rewarded_loaded()
+    return network and network.is_rewarded_loaded() or false
 end
 
 ---Check if the banner is loaded.
@@ -385,7 +385,7 @@ function M.is_banner_loaded(check_current)
         return false
     end
     local network = check_current and mediator.get_current_network(banner_mediator) or mediator.get_next_network(banner_mediator, true)
-    return network and network.is_banner_loaded()
+    return network and network.is_banner_loaded() or false
 end
 
 ---Returns the current network pointed to by mediator
