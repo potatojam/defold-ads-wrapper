@@ -133,8 +133,9 @@ end
 ---@param mediator ads_mediator
 ---@param q ads_queue queue object
 ---@param callback ads_callback|nil callback accepting the response result
+---@param params table|nil additional parameters
 ---@return integer
-function M.call(mediator, q, callback)
+function M.call(mediator, q, callback, params)
     local co
     local id
     co = coroutine.create(function()
@@ -150,7 +151,7 @@ function M.call(mediator, q, callback)
                     fn_response.name = network.NAME
                     response = fn_response
                     resume(co)
-                end)
+                end, params)
                 save_other(id, queue_id)
                 coroutine.yield(co)
             end
@@ -173,8 +174,9 @@ end
 ---@param mediator ads_mediator
 ---@param q ads_queue queue object
 ---@param callback ads_callback|nil callback accepting the response result
+---@param params table|nil additional parameters
 ---@return integer
-function M.call_current(mediator, q, callback)
+function M.call_current(mediator, q, callback, params)
     local co
     local id
     co = coroutine.create(function()
@@ -184,7 +186,7 @@ function M.call_current(mediator, q, callback)
             fn_response.name = network.NAME
             response = fn_response
             resume(co)
-        end)
+        end, params)
         save_other(id, queue_id)
         coroutine.yield(co)
         coroutines[id] = nil
@@ -199,8 +201,9 @@ end
 ---@param mediator ads_mediator
 ---@param q ads_queue queue object
 ---@param callback ads_callback|nil callback accepting the response result
+---@param params table|nil additional parameters
 ---@return integer
-function M.call_next(mediator, q, callback)
+function M.call_next(mediator, q, callback, params)
     local co
     local id
     co = coroutine.create(function()
@@ -210,7 +213,7 @@ function M.call_next(mediator, q, callback)
             fn_response.name = network.NAME
             response = fn_response
             resume(co)
-        end)
+        end, params)
         save_other(id, queue_id)
         coroutine.yield(co)
         coroutines[id] = nil
@@ -225,7 +228,8 @@ end
 ---@param mediator ads_mediator
 ---@param q ads_queue queue object
 ---@param callback ads_callback|nil callback accepting the response result
-function M.call_all(mediator, q, callback)
+---@param params table|nil additional parameters
+function M.call_all(mediator, q, callback, params)
     local count = 0
     local response = helper.success() --[[@as table]]
     response.responses = {}
@@ -245,7 +249,7 @@ function M.call_all(mediator, q, callback)
                 if count == 0 then
                     handle(callback, response)
                 end
-            end)
+            end, params)
         end
     end
 end

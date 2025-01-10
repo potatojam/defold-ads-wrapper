@@ -46,7 +46,8 @@ end
 ---Requests IDFA
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.request_idfa(network, callback)
+---@param params table|nil
+function M.request_idfa(network, callback, params)
     if idfa_result ~= nil then
         handle(callback, helper.success("IDFA already received"))
         return
@@ -57,7 +58,7 @@ function M.request_idfa(network, callback)
                 idfa_result = response.data
             end
             handle(callback, helper.success())
-        end)
+        end, params)
     else
         handle(callback, helper.success("IDFA not supported"))
     end
@@ -66,77 +67,85 @@ end
 ---Initializes network
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.init(network, callback)
+---@param params table|nil
+function M.init(network, callback, params)
     if network.is_initialized() then
         handle(callback, helper.success("Network already initialized"))
         return
     end
-    network.init(callback)
+    network.init(callback, params)
 end
 
 ---Loads interstitial ads
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.load_interstitial(network, callback)
-    if network.is_interstitial_loaded() then
+---@param params table|nil
+function M.load_interstitial(network, callback, params)
+    if network.is_interstitial_loaded(params) then
         handle(callback, helper.success("Interstitial ads already loaded"))
         return
     end
-    network.load_interstitial(callback)
+    network.load_interstitial(callback, params)
 end
 
 ---Shows interstitial ads
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.show_interstitial(network, callback)
-    network.show_interstitial(callback)
+---@param params table|nil
+function M.show_interstitial(network, callback, params)
+    network.show_interstitial(callback, params)
 end
 
 ---Loads rewarded ads
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.load_rewarded(network, callback)
-    if network.is_rewarded_loaded() then
+---@param params table|nil
+function M.load_rewarded(network, callback, params)
+    if network.is_rewarded_loaded(params) then
         handle(callback, helper.success("Rewarded ads already loaded"))
         return
     end
-    network.load_rewarded(callback)
+    network.load_rewarded(callback, params)
 end
 
 ---Shows rewarded ads
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.show_rewarded(network, callback)
-    network.show_rewarded(callback)
+---@param params table|nil
+function M.show_rewarded(network, callback, params)
+    network.show_rewarded(callback, params)
 end
 
 ---Loads banner
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.load_banner(network, callback)
-    if network.is_banner_loaded() then
+---@param params table|nil
+function M.load_banner(network, callback, params)
+    if network.is_banner_loaded(params) then
         handle(callback, helper.success("Banner already loaded"))
         return
     end
-    network.load_banner(callback)
+    network.load_banner(callback, params)
 end
 
 ---Unloads banner
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.unload_banner(network, callback)
-    if not network.is_banner_loaded() then
+---@param params table|nil
+function M.unload_banner(network, callback, params)
+    if not network.is_banner_loaded(params) then
         handle(callback, helper.success("Banner already unloaded"))
         return
     end
-    network.unload_banner(callback)
+    network.unload_banner(callback, params)
 end
 
 ---Checks if the required banner is shown and interrupts the queue if it shown.
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.is_banner_showed(network, callback)
-    if banner_network and banner_network == network and banner_network.is_banner_showed() then
+---@param params table|nil
+function M.is_banner_showed(network, callback, params)
+    if banner_network and banner_network == network and banner_network.is_banner_showed(params) then
         handle(callback, helper.abort("The required banner has already been shown"))
     else
         handle(callback, helper.success())
@@ -146,9 +155,10 @@ end
 ---Hides banner
 ---@param network ads_network|nil banner network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.hide_network_banner(network, callback)
-    if network and network.is_banner_showed() then
-        network.hide_banner(callback)
+---@param params table|nil
+function M.hide_network_banner(network, callback, params)
+    if network and network.is_banner_showed(params) then
+        network.hide_banner(callback, params)
         ---TODO QUESTION: need to clean the network in case of failure
         M.clear_banner_network()
     else
@@ -159,34 +169,37 @@ end
 ---Show network banner
 ---@param network ads_network
 ---@param callback ads_callback|nil
-function M.show_network_banner(network, callback)
+---@param params table|nil
+function M.show_network_banner(network, callback, params)
     network.show_banner(function(response)
         if response.result == events.SUCCESS then
             banner_network = network
         end
         handle(callback, response)
-    end)
+    end, params)
 end
 
 ---Shows banner
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.show_banner(network, callback)
+---@param params table|nil
+function M.show_banner(network, callback, params)
     if banner_network then
         M.hide_network_banner(banner_network, function(response)
             --TODO: if error occured
-            M.show_network_banner(network, callback)
+            M.show_network_banner(network, callback, params)
         end)
     else
-        M.show_network_banner(network, callback)
+        M.show_network_banner(network, callback, params)
     end
 end
 
 ---Hides banner
 ---@param network ads_network current network
 ---@param callback ads_callback|nil callback accepting the response result
-function M.hide_banner(network, callback)
-    M.hide_network_banner(banner_network, callback)
+---@param params table|nil
+function M.hide_banner(network, callback, params)
+    M.hide_network_banner(banner_network, callback, params)
 end
 
 ---Returns banners network

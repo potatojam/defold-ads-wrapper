@@ -183,7 +183,8 @@ end
 ---@param initialize_video boolean|nil check if need to initialize video networks
 ---@param initialize_banner boolean|nil check if need to initialize banner networks
 ---@param callback ads_callback|nil the function is called after execution.
-function M.init(initialize_video, initialize_banner, callback)
+---@param params table|nil additional parameters
+function M.init(initialize_video, initialize_banner, callback, params)
     if M.is_initialized() then
         handle(callback, helper.success("Ads Wrapper already initialized"))
         return
@@ -209,7 +210,7 @@ function M.init(initialize_video, initialize_banner, callback)
         end
         mediator.call_all(init_mediator, queues.init, function(response)
             handle(callback, helper.success("Tried to initialize networks", response))
-        end)
+        end, params)
     else
         handle(callback, helper.success("Ads Wrapper initialized without networks"))
     end
@@ -217,9 +218,10 @@ end
 
 ---Initialize video networks
 ---@param callback ads_callback|nil the function is called after execution.
-function M.init_video_networks(callback)
+---@param params table|nil additional parameters
+function M.init_video_networks(callback, params)
     if video_mediator then
-        mediator.call_all(video_mediator, queues.init, callback)
+        mediator.call_all(video_mediator, queues.init, callback, params)
     else
         mediator_error(VIDEO, callback)
     end
@@ -227,9 +229,10 @@ end
 
 ---Initialize banner networks
 ---@param callback ads_callback|nil the function is called after execution.
-function M.init_banner_networks(callback)
+---@param params table|nil additional parameters
+function M.init_banner_networks(callback, params)
     if banner_mediator then
-        mediator.call_all(banner_mediator, queues.init, callback)
+        mediator.call_all(banner_mediator, queues.init, callback, params)
     else
         mediator_error(BANNER, callback)
     end
@@ -237,10 +240,11 @@ end
 
 ---Loads rewarded ads for next network
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.load_rewarded(callback)
+function M.load_rewarded(callback, params)
     if M.is_video_setup() then
-        return mediator.call_next(video_mediator, queues.load_rewarded, callback)
+        return mediator.call_next(video_mediator, queues.load_rewarded, callback, params)
     else
         mediator_error(VIDEO, callback)
     end
@@ -249,10 +253,11 @@ end
 
 ---Shows rewarded ads for next network
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.show_rewarded(callback)
+function M.show_rewarded(callback, params)
     if M.is_video_setup() then
-        return mediator.call(video_mediator, queues.show_rewarded, callback)
+        return mediator.call(video_mediator, queues.show_rewarded, callback, params)
     else
         mediator_error(VIDEO, callback)
     end
@@ -261,10 +266,11 @@ end
 
 ---Loads interstitial ads for next network
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.load_interstitial(callback)
+function M.load_interstitial(callback, params)
     if M.is_video_setup() then
-        return mediator.call_next(video_mediator, queues.load_interstitial, callback)
+        return mediator.call_next(video_mediator, queues.load_interstitial, callback, params)
     else
         mediator_error(VIDEO, callback)
     end
@@ -273,10 +279,11 @@ end
 
 ---Shows interstitial ads for next network
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.show_interstitial(callback)
+function M.show_interstitial(callback, params)
     if M.is_video_setup() then
-        return mediator.call(video_mediator, queues.show_interstitial, callback)
+        return mediator.call(video_mediator, queues.show_interstitial, callback, params)
     else
         mediator_error(VIDEO, callback)
     end
@@ -285,10 +292,11 @@ end
 
 ---Loads banner for for next network.
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.load_banner(callback)
+function M.load_banner(callback, params)
     if M.is_banner_setup() then
-        return mediator.call_next(banner_mediator, queues.load_banner, callback)
+        return mediator.call_next(banner_mediator, queues.load_banner, callback, params)
     else
         mediator_error(BANNER, callback)
     end
@@ -297,8 +305,9 @@ end
 
 ---Shows setup banner for next network. Hides the previous banner if it was displayed.
 ---@param callback ads_callback|nil the function is called after execution.
+---@param params table|nil additional parameters
 ---@return integer|nil
-function M.show_banner(callback)
+function M.show_banner(callback, params)
     if M.is_banner_setup() then
         banner_hidden = false
         return mediator.call(banner_mediator, queues.show_banner, function(response)
@@ -306,7 +315,7 @@ function M.show_banner(callback)
                 M.hide_banner()
             end
             handle(callback, response)
-        end)
+        end, params)
     else
         mediator_error(BANNER, callback)
     end
@@ -315,10 +324,11 @@ end
 
 ---Hides setup banner for current network
 ---@param callback ads_callback|nil the function is called after execution.
-function M.hide_banner(callback)
+---@param params table|nil additional parameters
+function M.hide_banner(callback, params)
     if M.is_banner_setup() then
         banner_hidden = true
-        mediator.call_current(banner_mediator, queues.hide_banner, callback)
+        mediator.call_current(banner_mediator, queues.hide_banner, callback, params)
     else
         mediator_error(BANNER, callback)
     end
@@ -326,9 +336,10 @@ end
 
 ---Unloads banner for current networks.
 ---@param callback ads_callback|nil the function is called after execution.
-function M.unload_banner(callback)
+---@param params table|nil additional parameters
+function M.unload_banner(callback, params)
     if M.is_banner_setup() then
-        mediator.call_current(banner_mediator, queues.unload_banner, callback)
+        mediator.call_current(banner_mediator, queues.unload_banner, callback, params)
     else
         mediator_error(BANNER, callback)
     end
@@ -355,37 +366,40 @@ end
 ---Check if the interstitial video is loaded.
 ---Default checks the `next` network in mediator.
 ---@param check_current boolean|nil `Optional` if need check current network. Default `false`
+---@param params table|nil additional parameters
 ---@return boolean
-function M.is_interstitial_loaded(check_current)
+function M.is_interstitial_loaded(check_current, params)
     if not M.is_video_setup() then
         return false
     end
     local network = check_current and mediator.get_current_network(video_mediator) or mediator.get_next_network(video_mediator, true)
-    return network and network.is_interstitial_loaded()
+    return network and network.is_interstitial_loaded(params)
 end
 
 ---Check if the rewarded video is loaded.
 ---Default checks the `next` network in mediator.
 ---@param check_current boolean|nil `Optional` if need check current network. Default `false`
+---@param params table|nil additional parameters
 ---@return boolean
-function M.is_rewarded_loaded(check_current)
+function M.is_rewarded_loaded(check_current, params)
     if not M.is_video_setup() then
         return false
     end
     local network = check_current and mediator.get_current_network(video_mediator) or mediator.get_next_network(video_mediator, true)
-    return network and network.is_rewarded_loaded() or false
+    return network and network.is_rewarded_loaded(params) or false
 end
 
 ---Check if the banner is loaded.
 ---Default checks the `next` network in mediator.
 ---@param check_current boolean|nil `Optional` if need check current network. Default `false`
+---@param params table|nil additional parameters
 ---@return boolean
-function M.is_banner_loaded(check_current)
+function M.is_banner_loaded(check_current, params)
     if not M.is_banner_setup() then
         return false
     end
     local network = check_current and mediator.get_current_network(banner_mediator) or mediator.get_next_network(banner_mediator, true)
-    return network and network.is_banner_loaded() or false
+    return network and network.is_banner_loaded(params) or false
 end
 
 ---Returns the current network pointed to by mediator

@@ -42,15 +42,16 @@ end
 ---Call function from queue
 ---@param fn function
 ---@param network ads_network
+---@param params table|nil additional parameters
 ---@return ads_response
-local function call(fn, network)
+local function call(fn, network, params)
     local co = coroutine.running()
     assert(co, "You must call this from inside a coroutine")
     local response
     fn(network, function(fn_response)
         response = fn_response
         resume(co)
-    end)
+    end, params)
     coroutine.yield(co)
     return response
 end
@@ -77,14 +78,15 @@ end
 ---@param queue ads_queue
 ---@param network ads_network
 ---@param callback ads_callback callback accepting the response result
+---@param params table|nil additional parameters
 ---@return integer
-function M.run(queue, network, callback)
+function M.run(queue, network, callback, params)
     local length = #queue
     local id
     local co = coroutine.create(function()
         local response
         for i, fn in ipairs(queue) do
-            local fn_response = call(fn, network)
+            local fn_response = call(fn, network, params)
             if is_verbose then
                 if fn_response.result == events.ERROR and fn_response.message and (verbose_mode == events.V_ALL or verbose_mode == events.V_ERROR) then
                     print("Error: " .. fn_response.message)
