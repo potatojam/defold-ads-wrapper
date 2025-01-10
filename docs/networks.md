@@ -96,12 +96,15 @@ local unity_net_id = ads_wrapper.register_network(unity, {
 
 The network uses [this](https://github.com/AGulev/defold-poki-sdk) extension.
 Poki does not support banners. Also, there are no additional options.
-Verified version: **1.3.0**
+Verified version: **2.2.0**
+
+Params:
+* is_debug <kbd>boolean</kbd> _optional_ Set poki_sdk.set_debug state
 
 ```lua
 -- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/refs/tags/1.3.0.zip
 local poki = require("ads_wrapper.ads_networks.poki")
-local poki_net_id = ads_wrapper.register_network(poki)
+local poki_net_id = ads_wrapper.register_network(poki, {is_debug = true})
 ```
 
 ## Yandex

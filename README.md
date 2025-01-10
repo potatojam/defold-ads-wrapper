@@ -197,7 +197,7 @@ Setups banner mediator. More info [here](#mediators).
 - repeat_cut <kbd>number</kbd> _optional_ specified if after the first cycle in queue it is necessary to cut off a part of the order. Default: the total number of all networks.
 - _banner_auto_hide <kbd>boolean</kbd> _optional_ The banner will be automatically hidden if `hide_banner` was called after `show_banner`, but the banner did not have time to load. Default: `false`
 
-### `ads_wrapper.init(initilize_video, initilize_banner, callback)`
+### `ads_wrapper.init(initilize_video, initilize_banner, callback, params)`
 
 Initializes ads_wrapper. Callback consists `responses` field.
 
@@ -208,8 +208,9 @@ Queue: `check_connection->request_idfa->init`
 - initilize_video <kbd>boolean</kbd> _optional_  check if need to initialize video networks
 - initilize_banner <kbd>boolean</kbd> _optional_ check if need to initialize banner networks
 - callback <kbd>function</kbd> _optional_ callback with [response](#response).
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
-### `ads_wrapper.init_video_networks(callback)`
+### `ads_wrapper.init_video_networks(callback, params)`
 
 Initialize video networks.
 
@@ -218,8 +219,9 @@ Queue: `check_connection->request_idfa->init`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
-### `ads_wrapper.init_banner_networks(callback)`
+### `ads_wrapper.init_banner_networks(callback, params)`
 
 Initialize banner networks.
 
@@ -228,8 +230,9 @@ Queue: `check_connection->request_idfa->init`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
-### `ads_wrapper.load_rewarded(callback)`
+### `ads_wrapper.load_rewarded(callback, params)`
 
 Loads rewarded ads for next network.
 
@@ -238,12 +241,13 @@ Queue: `check_connection->request_idfa->init->load_rewarded`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.show_rewarded(callback)`
+### `ads_wrapper.show_rewarded(callback, params)`
 
 Shows rewarded ads for next network. Callback contain a special `code` field with [events.C_SKIPPED](#response-codes) if the user skipped the ad.
 
@@ -252,12 +256,13 @@ Queue: `check_connection->request_idfa->init->load_rewarded->show_rewarded`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response).
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.load_interstitial(callback)`
+### `ads_wrapper.load_interstitial(callback, params)`
 
 Loads interstitial ads for next network.
 
@@ -266,12 +271,13 @@ Queue: `check_connection->request_idfa->init->load_interstitial`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.show_interstitial(callback)`
+### `ads_wrapper.show_interstitial(callback, params)`
 
 Shows interstitial ads for next network.
 
@@ -280,12 +286,13 @@ Queue: `check_connection->request_idfa->init->load_interstitial->show_interstiti
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.load_banner(callback)`
+### `ads_wrapper.load_banner(callback, params)`
 
 Loads banner for for next network.
 
@@ -294,12 +301,13 @@ Queue: `check_connection->request_idfa->init->load_banner`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.show_banner(callback)`
+### `ads_wrapper.show_banner(callback, params)`
 
 Shows setup banner for next network. Hides the previous banner if it was displayed.
 
@@ -308,26 +316,29 @@ Queue: `check_connection->request_idfa->init->load_banner->show_banner`
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - id <kbd>integer|nil</kbd> id to cancel execution
 
-### `ads_wrapper.hide_banner(callback)`
+### `ads_wrapper.hide_banner(callback, params)`
 
 Hides setup banner for current network.
 
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
-### `ads_wrapper.unload_banner(callback)`
+### `ads_wrapper.unload_banner(callback, params)`
 
 Unloads banner for current networks.
 
 **Parameters**
 
 - callback <kbd>function</kbd> _optional_ callback with [response](#response)
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 ### `ads_wrapper.is_banner_setup()`
 
@@ -361,7 +372,7 @@ Checks for internet connection
 
 - value <kbd>boolean</kbd>
 
-### `ads_wrapper.is_interstitial_loaded(check_current)`
+### `ads_wrapper.is_interstitial_loaded(check_current, params)`
 
 Check if the interstitial video is loaded.
 Default checks the `next` network in mediator.
@@ -369,12 +380,13 @@ Default checks the `next` network in mediator.
 **Parameters**
 
 - check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - value <kbd>boolean</kbd>
 
-### `ads_wrapper.is_rewarded_loaded(check_current)`
+### `ads_wrapper.is_rewarded_loaded(check_current, params)`
 
 Check if the rewarded video is loaded.
 Default checks the `next` network in mediator.
@@ -382,12 +394,13 @@ Default checks the `next` network in mediator.
 **Parameters**
 
 - check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
 - value <kbd>boolean</kbd>
 
-### `ads_wrapper.is_banner_loaded(check_current)`
+### `ads_wrapper.is_banner_loaded(check_current, params)`
 
 Check if the banner is loaded.
 Default checks the `next` network in mediator.
@@ -395,6 +408,7 @@ Default checks the `next` network in mediator.
 **Parameters**
 
 - check_current <kbd>boolean</kbd> _optional_ if need check current network. Default `false`
+- params <kbd>table</kbd> _optional_ Custom parameters for the network
 
 **Return**
 
