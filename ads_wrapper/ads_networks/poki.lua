@@ -1,13 +1,17 @@
-local ads = require("ads_wrapper.ads_wrapper")
 local helper = require("ads_wrapper.ads_networks.helper")
-local events = require("ads_wrapper.events")
 
 local M = { NAME = "poki" }
 -- Extention: https://github.com/AGulev/defold-poki-sdk
 
+---@class rewarded_params
+---@field size string
+---@field start_callback function
+
 local parameters
 ---@type ads_callback|nil
 local module_callback
+---@type rewarded_params|nil
+local rewarded_params = nil
 
 local is_poki_initialized = false
 
@@ -42,11 +46,29 @@ end
 
 -- Called when a rewarded video is closed.
 ---@param self userdata script data
-local function rewarded_close(self, success)
-    if success then
-        callback_once(helper.success())
+---@param event boolean|hash
+local function rewarded_close(self, event)
+    if rewarded_params then
+        if event == poki_sdk.REWARDED_BREAK_START then
+            if rewarded_params.start_callback then
+                rewarded_params.start_callback()
+            end
+        elseif event == poki_sdk.REWARDED_BREAK_SUCCESS then
+            rewarded_params = nil
+            callback_once(helper.success())
+        elseif event == poki_sdk.REWARDED_BREAK_ERROR then
+            rewarded_params = nil
+            callback_once(helper.error("Something bad happened"))
+        else
+            rewarded_params = nil
+            callback_once(helper.error("Unhandled event " .. tostring(event)))
+        end
     else
-        callback_once(helper.skipped())
+        if event then
+            callback_once(helper.success())
+        else
+            callback_once(helper.skipped())
+        end
     end
 end
 
@@ -86,9 +108,15 @@ end
 
 -- Shows rewarded popup.
 ---@param callback ads_callback|nil the function is called after execution.
-function M.show_rewarded(callback)
+---@param params rewarded_params|nil
+function M.show_rewarded(callback, params)
     module_callback = callback
-    poki_sdk.rewarded_break(rewarded_close)
+    if params then
+        rewarded_params = params
+        poki_sdk.rewarded_break(rewarded_params.size or "small", rewarded_close)
+    else
+        poki_sdk.rewarded_break(rewarded_close)
+    end
 end
 
 -- Not used.
