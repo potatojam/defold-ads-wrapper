@@ -227,7 +227,7 @@ end
 ---@param callback ads_callback|nil callback accepting the response result
 function M.call_all(mediator, q, callback)
     local count = 0
-    local response = helper.success()
+    local response = helper.success() --[[@as table]]
     response.responses = {}
     if not mediator.networks or #mediator.networks == 0 then
         response.message = "Networks are missing."

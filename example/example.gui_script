@@ -237,7 +237,7 @@ local function init_poki(self)
 
         -- Need to add the extension: https://github.com/AGulev/defold-poki-sdk/archive/refs/tags/1.3.0.zip
         local poki = require("ads_wrapper.ads_networks.poki")
-        local poki_net_id = ads_wrapper.register_network(poki)
+        local poki_net_id = ads_wrapper.register_network(poki, { is_debug = true })
         if poki_net_id then
             ads_wrapper.setup_video({ { id = poki_net_id } })
             print_log(self, "init_poki", "Poki set up")

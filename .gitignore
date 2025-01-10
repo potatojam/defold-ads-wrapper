@@ -12,3 +12,4 @@ builtins
 /.vscode
 /_build
 /extension-ironsource
+/.editor_settings

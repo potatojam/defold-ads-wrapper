@@ -37,24 +37,16 @@ end
 -- Called when a interstitial is closed.
 ---@param self userdata script data
 local function adv_close(self)
-    if poki_sdk.is_ad_blocked() then
-        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
-    else
-        callback_once(helper.success())
-    end
+    callback_once(helper.success())
 end
 
 -- Called when a rewarded video is closed.
 ---@param self userdata script data
 local function rewarded_close(self, success)
-    if poki_sdk.is_ad_blocked() then
-        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
+    if success then
+        callback_once(helper.success())
     else
-        if success then
-            callback_once(helper.success())
-        else
-            callback_once(helper.skipped())
-        end
+        callback_once(helper.skipped())
     end
 end
 
@@ -70,7 +62,7 @@ function M.init(callback)
     module_callback = callback
     if M.is_supported() then
         is_poki_initialized = true
-        if ads.is_debug then
+        if parameters and parameters.is_debug then
             poki_sdk.set_debug(true)
         end
         callback_once(helper.success())
@@ -96,11 +88,7 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.show_rewarded(callback)
     module_callback = callback
-    if poki_sdk.is_ad_blocked() then
-        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
-    else
-        poki_sdk.rewarded_break(rewarded_close)
-    end
+    poki_sdk.rewarded_break(rewarded_close)
 end
 
 -- Not used.
@@ -120,11 +108,7 @@ end
 ---@param callback ads_callback|nil the function is called after execution.
 function M.show_interstitial(callback)
     module_callback = callback
-    if poki_sdk.is_ad_blocked() then
-        callback_once(helper.error("Adblock detected", events.C_ERROR_AD_BLOCK))
-    else
-        poki_sdk.commercial_break(adv_close)
-    end
+    poki_sdk.commercial_break(adv_close)
 end
 
 -- Not used.

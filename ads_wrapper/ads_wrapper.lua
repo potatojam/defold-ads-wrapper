@@ -17,9 +17,9 @@ local VIDEO = "Video"
 M.is_debug = sys.get_engine_info().is_debug
 
 ---@type ads_mediator
-local video_mediator
+local video_mediator = nil
 ---@type ads_mediator
-local banner_mediator
+local banner_mediator = nil
 ---@type table<integer, ads_network>
 local networks = {}
 
@@ -139,6 +139,10 @@ end
 ---Remove all registered networks
 function M.clear_networks()
     networks = {}
+    ---@diagnostic disable-next-line: cast-local-type
+    video_mediator = nil
+    ---@diagnostic disable-next-line: cast-local-type
+    banner_mediator = nil
 end
 
 ---Registers network. Returns id
@@ -197,10 +201,10 @@ function M.init(initilize_video, initilize_banner, callback)
 
     if initilize_video or initilize_banner then
         local init_mediator = mediator.create_mediator()
-        if initilize_video then
+        if initilize_video and video_mediator then
             mediator.add_networks(init_mediator, video_mediator)
         end
-        if initilize_banner then
+        if initilize_banner and banner_mediator then
             mediator.add_networks(init_mediator, banner_mediator)
         end
         mediator.call_all(init_mediator, queues.init, function(resonse)
