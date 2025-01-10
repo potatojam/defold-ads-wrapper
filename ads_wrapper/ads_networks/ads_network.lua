@@ -1,7 +1,7 @@
 ---@meta
 
 ---@class ads_network
-local ads_network = { NAME = "admob" }
+local ads_network = { NAME = "ads_network" }
 
 ---Api setup
 ---@param params any|nil

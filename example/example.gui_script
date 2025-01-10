@@ -436,7 +436,7 @@ local function init_ironsource(self)
 end
 
 ---Create a button and add it to the services table
----@param self userdata
+---@param self table
 ---@param name string node functions
 ---@param callback function
 local function create_service_button(self, name, callback)
@@ -445,7 +445,7 @@ local function create_service_button(self, name, callback)
 end
 
 ---Create a button and add it to the ads table
----@param self userdata
+---@param self table
 ---@param name string node functions
 ---@param callback function
 local function create_ads_button(self, name, callback)
