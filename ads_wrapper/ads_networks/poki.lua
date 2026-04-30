@@ -7,11 +7,16 @@ local M = { NAME = "poki" }
 ---@field size string
 ---@field start_callback function
 
+---@class interstitial_params
+---@field start_callback function
+
 local parameters
 ---@type ads_callback|nil
 local module_callback
 ---@type rewarded_params|nil
 local rewarded_params = nil
+---@type interstitial_params|nil
+local interstitial_params = nil
 
 local is_poki_initialized = false
 
@@ -40,8 +45,13 @@ end
 
 -- Called when a interstitial is closed.
 ---@param self userdata script data
-local function adv_close(self)
-    callback_once(helper.success())
+---@param event number|hash
+local function adv_close(self, event)
+    if not event or event == poki_sdk.COMMERCIAL_BREAK_SUCCESS then
+        callback_once(helper.success())
+    elseif event == poki_sdk.COMMERCIAL_BREAK_START and interstitial_params and interstitial_params.start_callback then
+        interstitial_params.start_callback()
+    end
 end
 
 -- Called when a rewarded video is closed.
@@ -134,8 +144,10 @@ end
 
 -- Shows interstitial popup.
 ---@param callback ads_callback|nil the function is called after execution.
-function M.show_interstitial(callback)
+---@param params interstitial_params|nil
+function M.show_interstitial(callback, params)
     module_callback = callback
+    interstitial_params = params
     poki_sdk.commercial_break(adv_close)
 end
 
