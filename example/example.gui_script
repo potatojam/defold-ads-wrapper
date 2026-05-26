@@ -54,9 +54,20 @@ local function show_ads_buttons(self)
     set_buttons(self, false)
 end
 
+local function get_text_metrics_from_node(node)
+    local font_name = gui.get_font(node)
+    local font = gui.get_font_resource(font_name)
+    return resource.get_text_metrics(font, gui.get_text(node), {
+        width = gui.get_size(node).x,
+        line_break = gui.get_line_break(node),
+        leading = gui.get_leading(node),
+        tracking = gui.get_tracking(node)
+    })
+end
+
 local function update_log(self)
-    local metrix = gui.get_text_metrics_from_node(self.log_text)
-    self.log_size.y = metrix.height * 0.5 + 10
+    local metrics = get_text_metrics_from_node(self.log_text)
+    self.log_size.y = metrics.height * 0.5 + 10
     if self.log_size.y < 350 then
         self.log_size.y = 350
     end
@@ -502,7 +513,7 @@ function init(self)
     self.btn_mediation_applovin = self.druid:new_button("btn_mediation_applovin", on_mediation_applovin)
     set_button_state(self.btn_mediation_applovin, false)
 
-    print_log(self, "init", "version: " .. sys.get_config("project.version"))
+    print_log(self, "init", "version: " .. sys.get_config_string("project.version"))
     init_test(self)
     show_services_buttons(self)
     ---TODO: return to game project old networks
