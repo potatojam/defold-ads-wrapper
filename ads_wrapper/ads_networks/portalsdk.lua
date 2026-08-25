@@ -1,6 +1,7 @@
 local helper = require("ads_wrapper.ads_networks.helper")
 
 local M = {NAME = "portalsdk"}
+---https://github.com/orbit-software/portalsdk-defold
 
 ---@class rewarded_params
 ---@field size string
