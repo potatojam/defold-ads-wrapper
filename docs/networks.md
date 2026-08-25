@@ -37,7 +37,7 @@ end)
 
 The network uses [this](https://github.com/defold/extension-admob) extension.
 In the `debug` mode will always be used test keys.
-Verified version: **3.0.1**
+Verified version: **4.2.1**
 
 > &#x26a0;&#xfe0f; Don't forget to add settings to game.project
 
@@ -94,9 +94,9 @@ local unity_net_id = ads_wrapper.register_network(unity, {
 
 ## Poki
 
-The network uses [this](https://github.com/AGulev/defold-poki-sdk) extension.
+The network uses [this](https://github.com/defold/extension-poki-sdk) extension.
 Poki does not support banners. Also, there are no additional options.
-Verified version: **3.6.0**
+Verified version: **4.1.0**
 
 Params:
 * is_debug <kbd>boolean</kbd> _optional_ Set poki_sdk.set_debug state

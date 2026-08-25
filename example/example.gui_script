@@ -32,6 +32,7 @@ end
 local function set_button_state(button, value)
     button:set_enabled(value)
     gui.set_enabled(button.node, value)
+    gui.set_alpha(button.node, value and 1 or 0)
 end
 
 local function set_buttons(self, state)
