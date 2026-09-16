@@ -3,17 +3,24 @@ local helper = require("ads_wrapper.ads_networks.helper")
 local M = {NAME = "portalsdk"}
 ---https://github.com/orbit-software/portalsdk-defold
 
----@class rewarded_params
----@field size string
----@field start_callback function
+---@class portalsdk_params
+---@field placement_id string|nil Placement identifier for ad analytics; omitted to use the SDK default.
 
-local parameters
----@type rewarded_params|nil
-local rewarded_params = nil
+---@type portalsdk_params
+local parameters = {}
 
 local is_portalsdk_initialized = false
 local is_rewarded_loaded = false
 local is_interstitial_loaded = false
+
+---@param params portalsdk_params|nil
+---@return string|nil
+local function get_placement_id(params)
+    if params and params.placement_id ~= nil then
+        return params.placement_id
+    end
+    return parameters.placement_id
+end
 
 ---Create an asynchronous callback that can be completed only once.
 ---@param callback ads_callback|nil
@@ -54,9 +61,9 @@ local function call_portalsdk(callback, error_message, request)
 end
 
 -- Api setup
----@param params table
+---@param params portalsdk_params|nil
 function M.setup(params)
-    parameters = params
+    parameters = params or {}
 end
 
 -- Initializes `portalsdk` sdk.
@@ -86,7 +93,7 @@ end
 
 -- Shows rewarded popup.
 ---@param callback ads_callback|nil the function is called after execution.
----@param params rewarded_params|nil
+---@param params portalsdk_params|nil
 function M.show_rewarded(callback, params)
     local callback_once = make_callback_once(callback)
     is_rewarded_loaded = false
@@ -97,7 +104,7 @@ function M.show_rewarded(callback, params)
             else
                 callback_once(helper.skipped())
             end
-        end)
+        end, get_placement_id(params))
     end)
 end
 
@@ -126,13 +133,14 @@ end
 
 -- Shows interstitial popup.
 ---@param callback ads_callback|nil the function is called after execution.
-function M.show_interstitial(callback)
+---@param params portalsdk_params|nil
+function M.show_interstitial(callback, params)
     local callback_once = make_callback_once(callback)
     is_interstitial_loaded = false
     call_portalsdk(callback_once, "portalsdk interstitial request failed", function()
         portalsdk.request_ad(function(self)
             callback_once(helper.success())
-        end)
+        end, get_placement_id(params))
     end)
 end
 

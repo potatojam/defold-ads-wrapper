@@ -18,6 +18,7 @@ Supported services:
 * Applovin Max
 * GameDistribution
 * IronSource
+* PortalSDK
 
 Ads Wrapper also allows you to run multiple networks at the same time. For example Admob and Unity Ads.
 
@@ -511,6 +512,7 @@ More information can be found at the links:
 * [Admob and Unity Ads](docs/networks.md#admob-and-unity-ads)
 * [GameDistribution](docs/networks.md#gamedistribution)
 * [IronSource](docs/networks.md#ironsource)
+* [PortalSDK](docs/networks.md#portalsdk)
 
 ## Network Creation
 

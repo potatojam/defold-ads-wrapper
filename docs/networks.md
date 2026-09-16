@@ -318,6 +318,33 @@ You need to set:
         ads_wrapper.setup_video({ { id = ironsource_net_id, count = 1 } })
 ```
 
+## PortalSDK
+
+The network uses [PortalSDK for Defold](https://github.com/orbit-software/portalsdk-defold) on HTML5. Add [v0.1.92](https://github.com/orbit-software/portalsdk-defold/archive/refs/tags/v0.1.92.zip) or a compatible newer version to your `game.project` dependencies. Rewarded and interstitial ads are supported; banners are not supported.
+
+Network options:
+
+* `placement_id` <kbd>string</kbd> _optional_ Default placement identifier for ad analytics, used for both rewarded and interstitial requests.
+
+```lua
+local portal_network = require("ads_wrapper.ads_networks.portalsdk")
+local portal_id = ads_wrapper.register_network(portal_network, {
+    placement_id = "gameplay"
+})
+ads_wrapper.setup_video({{id = portal_id}})
+
+-- Override the default placement for an individual request.
+ads_wrapper.show_rewarded(function(response)
+    pprint(response)
+end, {placement_id = "double_reward"})
+
+ads_wrapper.show_interstitial(function(response)
+    pprint(response)
+end, {placement_id = "level_complete"})
+```
+
+Call these show methods separately at the relevant points in your game. A per-call `params.placement_id` takes precedence over the network default. If neither is set, the extension uses its SDK default (`"none"`). Existing calls without parameters continue to work. Placement IDs apply to show requests; availability checks do not take a placement ID.
+
 ## Admob and Unity Ads
 
 Example for two networks:
